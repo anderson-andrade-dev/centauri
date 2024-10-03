@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuário|Exp7orer</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/summernote/summernote-bs4.min.css}">
+</head>
+
+<body>
+<header>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo.jpg}" width="30" height="30" class="d-inline-block align-top" alt="">
+            Exp7orer
+        </a>
+        <form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="Pesquisar" aria-label="Pesquisar">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Pesquisar</button>
+        </form>
+        <form class="form-inline">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-login" hidden>
+                login
+            </button>
+        </form>
+        <form class="form-inline">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-cadastro" hidden>
+                Cadastrar
+            </button>
+        </form>
+        <form class="form-inline">
+            <p th:text="${usuario.nome}"></p>
+        </form>
+        <form class="form-inline">
+
+            <button type="button" class="btn" data-toggle="modal" data-target="#modal-usuario"><i
+                    class="fa-regular fa-user fa-2x" aria-hidden="true"></i></button>
+        </form>
+        <form class="form-inline">
+            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-mensagem">
+                Mensagens <span class="badge badge-light"
+                                th:if='${not caixaDeMensagem.mensagens.get(0).texto.contains("Você não tem mensagens!")}'
+                                th:text="${caixaDeMensagem.mensagens.size()}"></span>
+            </button>
+        </form>
+    </nav>
+
+</header>
+<main>
+    <hr>
+    <div class="container">
+        <div class="row">
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Minhas Publicações</h5>
+                        <div class="table-responsive" style="height:20rem;overflow:auto;">
+                            <table class="table table-borderless">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody th:if="${minhasPublicacaoes} == null or ${minhasPublicacaoes.size()}!=0">
+                                <tr th:each="publicacao:${minhasPublicacaoes}">
+                                    <td>
+                                        <div class="card" style="width:5rem;">
+                                            <img class="card-img-top"
+                                                 th:src="${publicacao.urlImagem}"
+                                                 alt="Imagem de capa do card">
+                                        </div>
+                                    </td>
+                                    <td th:text="${publicacao.texto}">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Rank das Publicações</h5>
+                        <div class="table-responsive" style="height:20rem;overflow:auto;">
+                            <table class="table table-borderless">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody th:if="${rankPublicacoes.size()}!=0">
+                                <tr th:each="rank:${rankPublicacoes}">
+                                    <td>
+                                        <div class="card" style="width:5rem;">
+                                            <img class="card-img-top"
+                                                 th:src="${rank.urlImagem}"
+                                                 alt="Imagem de capa do card">
+                                        </div>
+                                    </td>
+                                    <td th:text="${rank.texto}">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Publicações</h5>
+                        <div class="table-responsive" style="height:20rem;overflow:auto;">
+                            <table class="table table-borderless">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody th:if="${todasPublicacoes.size()}!=0">
+                                <tr th:each="publicacaoSistema:${todasPublicacoes}">
+                                    <td>
+                                        <div class="card" style="width:5rem;">
+                                            <img class="card-img-top"
+                                                 th:src="${publicacaoSistema.urlImagem}"
+                                                 alt="Imagem de capa do card">
+                                        </div>
+                                    </td>
+                                    <td th:text="${publicacaoSistema.texto}">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-3">
+                <div class="row">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" th:src="@{/images/logo.jpg}" alt="Imagem de capa do card">
+                        <div class="card-body">
+                            <form th:action="@{/postar}" th:method="post" name="publicacao" id="publicacao"
+                                  enctype="multipart/form-data">
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="imagem" name="imagem"
+                                               accept="image/*">
+                                        <label class="custom-file-label" for="imagem">Escolher
+                                            Imagem</label>
+                                    </div>
+                                </div>
+                                <input hidden th:value="${usuario.codigo}" name="codigo">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="card">
+                    <div class="card-body">
+                        <label for="texto">Publicar</label>
+                        <textarea class="" style="width: 100%; height: 100%;" id="texto" th:name="texto"
+                                  rows="8" form="publicacao"></textarea>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-outline-success my-4 my-sm-3" type="submit" form="publicacao">Publicar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="card-deck">
+                <div class="card">
+                    <img class="card-img-top" src="/images/dia-da-gastronomia-mineira.jpg"
+                         alt="Imagem de capa do card">
+                    <div class="card-body">
+                        <h5 class="card-title">Título do card</h5>
+                        <p class="card-text">Este é um card maior com suporte a texto embaixo, que funciona como uma
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Atualizados 3 minutos atrás</small>
+                    </div>
+                </div>
+                <div class="card">
+                    <img class="card-img-top" src="/images/fotos-de-paisagens.jpg" alt="Imagem de capa do card">
+                    <div class="card-body">
+                        <h5 class="card-title">Título do card</h5>
+                        <p class="card-text">Este é um card maior com suporte a texto embaixo, que funciona como uma
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Atualizados 3 minutos atrás</small>
+                    </div>
+                </div>
+                <div class="card">
+                    <img class="card-img-top" src="/images/fotos-de-paisagens_1.jpg" alt="Imagem de capa do card">
+                    <div class="card-body">
+                        <h5 class="card-title">Título do card</h5>
+                        <p class="card-text">Este é um card maior com suporte a texto embaixo, que funciona como uma
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Atualizados 3 minutos atrás</small>
+                    </div>
+                </div>
+                <div class="card">
+                    <img class="card-img-top" src="/images/fotos-de-paisagens_2.jpg" alt="Imagem de capa do card">
+                    <div class="card-body">
+                        <h5 class="card-title">Título do card</h5>
+                        <p class="card-text">Este é um card maior com suporte a texto embaixo, que funciona como uma
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Atualizados 3 minutos atrás</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <hr>
+</main>
+<footer class="bg-body-tertiary text-center">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+        <p class="text-right" id="dataRodape"></p>
+        © 2024 Copyright:
+        <a class="text-body" href="#">Exp7orer</a>
+    </div>
+</footer>
+
+<!--Modal das edição do usuário  -->
+
+<div class="modal fade" id="modal-usuario" tabindex="-1" role="dialog" aria-labelledby="modal-usuario"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuário</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/alteraUsuario}" th:method="post" id="form-altera-usuario"
+                      name="form-altera-usuario" autocomplete="off">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" class="form-control" id="nome"
+                               placeholder="Nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="sobreNome">Sobrenome</label>
+                        <input type="text" class="form-control" id="sobreNome" name="sobreNome"
+                               placeholder="Sobrenome">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-check-label" for="nomeUsuario">Nome de Usuário</label>
+                        <input type="text" class="form-control" id="nomeUsuario" placeholder="Novo nome do usuário">
+                    </div>
+                    <div class="form-group">
+                        <label for="senha">Nova Senha</label>
+                        <input type="password" class="form-control" id="senha"
+                               placeholder="Alterar Senha">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Alterar</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal das mensagens  -->
+
+<div class="modal fade" id="modal-mensagem" tabindex="-1" role="dialog" aria-labelledby="modal-mensagem"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mensagens do Usuário</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive" style="height:20rem;overflow:auto;">
+                            <table class="table table-borderless table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col" style="text-align:right;">Marcar como Lida</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="msn:${caixaDeMensagem.mensagens}">
+                                    <td>
+                                        <p th:text="${msn.texto}"></p>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <div class="form-check">
+                                            <input class="form-check-input position-static" type="checkbox"
+                                                   id="" value="opcao1" aria-label="...">
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.js}"></script>
+<script th:src="@{/js/bootstrap.js}"></script>
+<script th:src="@{summernote/summernote-bs4.min.js}"></script>
+<script th:src="@{/js/centauri.js}"></script>
+
+
+</body>

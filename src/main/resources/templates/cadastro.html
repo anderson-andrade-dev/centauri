@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Exp7orer</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: url('/images/centauri.jpg') no-repeat center center fixed; /* Imagem de fundo */
+            background-size: cover; /* Cobre toda a tela */
+            color: #333;
+            display: flex;
+            align-items: center; /* Centraliza verticalmente */
+            justify-content: center; /* Centraliza horizontalmente */
+            height: 100vh; /* Ocupa toda a altura da tela */
+            overflow: hidden; /* Remove o scroll */
+        }
+
+        .form-signin {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6)); /* Degradê no fundo do formulário */
+            backdrop-filter: blur(15px); /* Efeito de vidro */
+            border-radius: 20px;
+            padding: 1.5rem; /* Diminuído o padding para mais espaço */
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3); /* Sombra mais forte e pronunciada */
+            width: 90%; /* Largura ocupando 90% da tela */
+            max-width: 350px; /* Largura máxima do formulário */
+            height: auto; /* Altura automática */
+            box-sizing: border-box; /* Inclui padding e bordas na largura total */
+        }
+
+        .form-signin img {
+            width: 80px; /* Tamanho da imagem reduzido */
+            height: auto;
+            margin-bottom: 15px; /* Espaçamento abaixo da imagem */
+        }
+
+        .form-signin .h3 {
+            color: #007bff; /* Cor do título */
+            margin-bottom: 1.2rem; /* Margem abaixo do título */
+            font-weight: bold; /* Aumenta o peso da fonte */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste */
+            font-size: 1.5rem; /* Tamanho da fonte do título ajustado */
+        }
+
+        .form-signin .form-control {
+            border-radius: 30px; /* Cantos mais arredondados nos inputs */
+            border: 1px solid rgba(255, 255, 255, 0.7); /* Borda leve e clara */
+            background: rgba(255, 255, 255, 0.15); /* Fundo dos inputs com leve transparência */
+            color: #fff; /* Cor do texto */
+            padding: 10px; /* Diminuído o espaçamento interno */
+            font-size: 1rem; /* Tamanho da fonte reduzido */
+            transition: all 0.3s; /* Transição suave */
+            width: calc(100% - 30px); /* Largura total com margem */
+            margin-bottom: 10px; /* Espaçamento abaixo dos inputs */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste */
+        }
+
+        .form-signin .form-control:focus {
+            border-color: rgba(255, 255, 255, 1); /* Borda mais clara ao focar */
+            background: rgba(255, 255, 255, 0.3); /* Muda fundo ao focar */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Sombra ao focar */
+        }
+
+        .form-signin .btn {
+            border-radius: 30px; /* Cantos arredondados nos botões */
+            background: rgba(0, 123, 255, 0.9); /* Cor do botão com leve transparência */
+            border: none; /* Sem borda */
+            padding: 10px; /* Diminuído o espaçamento interno */
+            font-size: 1rem; /* Tamanho da fonte do botão reduzido */
+            font-weight: bold; /* Aumentando o peso da fonte do botão */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Transição suave */
+            width: 100%; /* Largura total do botão */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra para efeito de profundidade */
+            color: white; /* Cor do texto do botão */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste do texto */
+        }
+
+        .form-signin .btn:hover {
+            background-color: rgba(0, 123, 255, 1); /* Cor do botão ao passar o mouse */
+            transform: translateY(-2px); /* Eleva o botão ao passar o mouse */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Aumenta a sombra ao passar o mouse */
+        }
+
+        .alert {
+            margin-top: 1rem; /* Margem acima dos alertas */
+            border-radius: 5px; /* Cantos arredondados nos alertas */
+            font-size: 0.9rem; /* Aumentando o tamanho da fonte */
+        }
+
+        .signup-link {
+            margin-top: 15px; /* Margem acima do link de login */
+            font-size: 0.9rem; /* Tamanho da fonte do link */
+            color: #007bff; /* Cor do link */
+            text-decoration: none; /* Sem sublinhado */
+            transition: color 0.3s; /* Transição suave */
+        }
+
+        .signup-link:hover {
+            color: #0056b3; /* Cor do link ao passar o mouse */
+            text-decoration: underline; /* Sublinha ao passar o mouse */
+        }
+    </style>
+</head>
+
+<body class="text-center">
+<form class="form-signin" th:action="@{/cadastro}" method="post" id="form-cadastro" name="form-cadastro"
+      autocomplete="off">
+    <a th:href="@{/}"> <img class="mb-4" th:src="@{/images/centauri.png}" alt="Logo"></a> <!-- Tamanho da imagem -->
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input type="text" class="form-control" id="cad-nome" name="nome"
+                   placeholder="Digite seu nome..." required>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input type="text" class="form-control" id="cad-sobrenome" name="sobreNome"
+                   placeholder="Digite seu sobrenome..." required>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input type="text" class="form-control" id="nomeUsuario" name="nomeUsuario"
+                   placeholder="Digite o nome de usuário..." required>
+            <span id="nomeUsuario-feedback" style="color: red;"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input type="email" class="form-control" id="email" name="email"
+                   placeholder="Digite o email..." required>
+            <span id="email-feedback"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input type="password" class="form-control" id="cad-senha" name="senha"
+                   placeholder="Digite a senha..." required>
+        </div>
+    </div>
+
+    <button class="btn btn-outline-primary" th:type="submit">Cadastrar</button>
+
+    <div class="alert alert-danger" role="alert" th:if="${erroCadastro}">
+        <p th:text="${mensagem}"></p>
+    </div>
+
+    <a href="/login" class="signup-link">Já tem uma conta? Faça login aqui.</a> <!-- Link para login -->
+
+</form>
+
+<script th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.js}"></script>
+<script th:src="@{/js/bootstrap.js}"></script>
+<script th:src="@{/js/centauri.js}" th:type="module"></script>
+<script th:src="@{/js/likeDislike.js}"></script>
+<script th:src="@{/js/validaremail.js}"></script>
+<script th:src="@{/js/verificarusuario.js}"></script>
+</body>
+</html>

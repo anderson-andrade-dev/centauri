@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard de Usuários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: url("/images/centauri.jpg") no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar .form-inline .btn {
+            background: rgba(0, 191, 255, 0.9);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .navbar .form-inline .btn:hover {
+            background: rgba(0, 191, 255, 1);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+        }
+
+        .card-footer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: none;
+
+        }
+
+        .btn-outline-success {
+            border: 1px solid rgba(0, 191, 255, 0.8);
+            color: rgba(0, 191, 255, 0.9);
+            background: transparent;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-outline-success:hover {
+            background: rgba(0, 191, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-container {
+            margin: 20px 0;
+        }
+
+        canvas {
+            background-color: white;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header>
+    <div th:insert="~{layout::nav}"></div>
+</header>
+
+<div class="container">
+    <h1>Dashboard de Usuários</h1>
+
+    <div class="chart-container">
+        <canvas id="usuariosAtivosChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="publicacoesChart"></canvas>
+    </div>
+
+    <!-- Aqui você pode adicionar mais gráficos ou informações conforme necessário -->
+</div>
+
+<footer class="bg-body-tertiary text-center">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0);">
+        <p class="text-right" id="dataRodape"></p>
+        © 2024 Copyright:
+        <a class="text-body" href="/">JavaD</a>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script>
+    // Gráfico de Usuários Ativos
+    const ctxAtivos = document.getElementById('usuariosAtivosChart').getContext('2d');
+    const usuariosAtivosChart = new Chart(ctxAtivos, {
+        type: 'bar',
+        data: {
+            labels: ['Ativos', 'Inativos'],
+            datasets: [{
+                label: 'Usuários',
+                data: [/*[[${totalAtivos}]], [[${totalInativos}]]*/],
+                backgroundColor: ['#4CAF50', '#F44336'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Gráfico de Publicações
+    const ctxPublicacoes = document.getElementById('publicacoesChart').getContext('2d');
+    const publicacoesChart = new Chart(ctxPublicacoes, {
+        type: 'pie',
+        data: {
+            labels: ['Ativas', 'Inativas'],
+            datasets: [{
+                label: 'Publicações',
+                data: [/*[[${totalPublicacoes}]]*/, 0],
+                backgroundColor: ['#2196F3', '#FFC107'],
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+<script defer th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script defer th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script defer th:src="@{/fontawesome/js/all.js}"></script>
+<script defer th:src="@{/js/bootstrap.js}"></script>
+<script defer th:src="@{/js/centauri.js}" th:type="module"></script>
+</body>
+</html>

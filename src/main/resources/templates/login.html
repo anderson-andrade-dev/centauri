@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Exp7orer</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: url('/images/centauri.jpg') no-repeat center center fixed; /* Imagem de fundo */
+            background-size: cover; /* Cobre toda a tela */
+            color: #333;
+            display: flex;
+            align-items: center; /* Centraliza verticalmente */
+            justify-content: center; /* Centraliza horizontalmente */
+            height: 100vh; /* Ocupa toda a altura da tela */
+        }
+
+        .form-signin {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6)); /* Degradê no fundo do formulário */
+            backdrop-filter: blur(15px); /* Efeito de vidro */
+            border-radius: 20px;
+            padding: 2.5rem; /* Ajustado o padding para mais espaço */
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3); /* Sombra mais forte e pronunciada */
+            width: 90%; /* Largura ocupando 90% da tela */
+            max-width: 400px; /* Largura máxima do formulário */
+        }
+
+        .form-signin img {
+            width: 100px; /* Tamanho da imagem */
+            height: auto;
+            margin-bottom: 20px; /* Espaçamento abaixo da imagem */
+        }
+
+        .form-signin .h3 {
+            color: #007bff; /* Cor do título */
+            margin-bottom: 1.5rem; /* Margem abaixo do título */
+            font-weight: bold; /* Aumenta o peso da fonte */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste */
+        }
+
+        .form-signin .form-control {
+            border-radius: 30px; /* Cantos mais arredondados nos inputs */
+            border: 1px solid rgba(255, 255, 255, 0.7); /* Borda leve e clara */
+            background: rgba(255, 255, 255, 0.15); /* Fundo dos inputs com leve transparência */
+            color: #fff; /* Cor do texto */
+            padding: 15px; /* Espaçamento interno */
+            font-size: 1.1rem; /* Tamanho da fonte */
+            transition: all 0.3s; /* Transição suave */
+            width: calc(100% - 30px); /* Largura total com margem */
+            margin-bottom: 15px; /* Espaçamento abaixo dos inputs */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste */
+        }
+
+        .form-signin .form-control:focus {
+            border-color: rgba(255, 255, 255, 1); /* Borda mais clara ao focar */
+            background: rgba(255, 255, 255, 0.3); /* Muda fundo ao focar */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Sombra ao focar */
+        }
+
+        .form-signin .btn {
+            border-radius: 30px; /* Cantos arredondados nos botões */
+            background: rgba(0, 123, 255, 0.9); /* Cor do botão com leve transparência */
+            border: none; /* Sem borda */
+            padding: 15px; /* Aumentando o espaçamento interno */
+            font-size: 1.1rem; /* Aumentando o tamanho da fonte */
+            font-weight: bold; /* Aumentando o peso da fonte do botão */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Transição suave */
+            width: 100%; /* Largura total do botão */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra para efeito de profundidade */
+            color: white; /* Cor do texto do botão */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste do texto */
+        }
+
+        .form-signin .btn:hover {
+            background-color: rgba(0, 123, 255, 1); /* Cor do botão ao passar o mouse */
+            transform: translateY(-2px); /* Eleva o botão ao passar o mouse */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Aumenta a sombra ao passar o mouse */
+        }
+
+        .checkbox label {
+            color: #fff; /* Cor do texto da checkbox */
+            font-size: 0.9rem; /* Aumentando o tamanho da fonte */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para melhorar o contraste */
+        }
+
+        .alert {
+            margin-top: 1rem; /* Margem acima dos alertas */
+            border-radius: 5px; /* Cantos arredondados nos alertas */
+            font-size: 0.9rem; /* Aumentando o tamanho da fonte */
+        }
+
+        .signup-link {
+            margin-top: 15px; /* Margem acima do link de cadastro */
+            font-size: 0.9rem; /* Tamanho da fonte do link */
+            color: #007bff; /* Cor do link */
+            text-decoration: none; /* Sem sublinhado */
+            transition: color 0.3s; /* Transição suave */
+        }
+
+        .signup-link:hover {
+            color: #0056b3; /* Cor do link ao passar o mouse */
+            text-decoration: underline; /* Sublinha ao passar o mouse */
+        }
+    </style>
+</head>
+
+<body class="text-center">
+<form class="form-signin" th:action="@{login}" method="post" autocomplete="off">
+    <a th:href="@{/}"> <img th:src="@{/images/centauri.png}" alt="Logo"></a> <!-- Tamanho da imagem -->
+
+    <label for="username" class="sr-only">Endereço de email</label>
+    <input type="username" id="username" name="username" class="form-control" placeholder="Seu email" required
+           autofocus>
+
+    <label for="password" class="sr-only">Senha</label>
+    <input type="password" id="password" name="password" class="form-control" placeholder="Senha" required>
+
+    <div class="checkbox mb-3">
+        <label>
+            <input type="checkbox" value="remember-me"> Lembrar de mim
+        </label>
+    </div>
+
+    <button class="btn btn-lg btn-block" type="submit">Login</button>
+
+    <div class="alert alert-danger" role="alert" th:if="${erroLogin}">
+        Verifique o Email ou a Senha!
+    </div>
+    <div class="alert alert-danger" role="alert" th:if="${mensagem != null}">
+        <p th:text="${mensagem}"></p>
+    </div>
+
+    <a href="/cadastro" class="signup-link">Não tem uma conta? Cadastre-se aqui.</a> <!-- Link para cadastro -->
+
+    <p class="mt-5 mb-3 text-muted">&copy; Exp7orer 2024</p>
+</form>
+
+<script th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.js}"></script>
+<script th:src="@{/js/bootstrap.js}"></script>
+<script th:src="@{/js/centauri.js}" th:type="module"></script>
+</body>
+
+</html>

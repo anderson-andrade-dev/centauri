@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apostila de Thymeleaf 3.1.2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #007BFF;
+        }
+
+        pre {
+            background-color: #efefef;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        code {
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Apostila de Thymeleaf 3.1.2</h1>
+    <p>Essa apostila visa ensinar o uso básico e avançado do <strong>Thymeleaf 3.1.2</strong>, um template engine
+        moderno para Java. Aprenderemos como integrá-lo em aplicações Spring Boot e outros frameworks. Exemplos de
+        código serão fornecidos ao longo do conteúdo.</p>
+
+    <h2>1. Introdução ao Thymeleaf</h2>
+    <p>Thymeleaf é um mecanismo de templates para Java que permite processar e gerar templates HTML, XML, entre outros,
+        de forma dinâmica. É amplamente utilizado com o <strong>Spring Boot</strong> para criar aplicações web
+        dinâmicas.</p>
+
+    <h3>1.1. Configuração</h3>
+    <p>Para começar a usar Thymeleaf, adicione a seguinte dependência em seu arquivo <code>pom.xml</code> se estiver
+        usando Maven:</p>
+    <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+&lt;/dependency&gt;
+        </code></pre>
+
+    <h2>2. Sintaxe Básica</h2>
+    <p>Thymeleaf usa uma sintaxe de atributos especiais em tags HTML, onde os prefixos como <code>th:</code> são usados
+        para definir o comportamento.</p>
+
+    <h3>2.1. Exibindo Variáveis</h3>
+    <p>Para exibir uma variável no HTML, usamos o atributo <code>th:text</code>. Exemplo:</p>
+    <pre><code>&lt;p th:text="${mensagem}"&gt;Texto padrão&lt;/p&gt;</code></pre>
+    <p>Esse código renderiza o valor da variável <code>mensagem</code> no lugar de "Texto padrão".</p>
+
+    <h3>2.2. Operadores do Thymeleaf</h3>
+    <p>Thymeleaf oferece vários operadores para manipular dados dentro dos templates. Alguns deles incluem:</p>
+    <ul>
+        <li><code>${...}</code>: Acessa variáveis no modelo.</li>
+        <li><code>*{...}</code>: Acessa propriedades de formulários.</li>
+        <li><code>#{...}</code>: Acessa mensagens i18n (internacionalização).</li>
+    </ul>
+
+    <h2>3. Estruturas de Controle</h2>
+    <p>Thymeleaf permite o uso de estruturas condicionais e loops.</p>
+
+    <h3>3.1. Condicionais</h3>
+    <p>Para mostrar conteúdo condicionalmente, use <code>th:if</code> e <code>th:unless</code>. Exemplo:</p>
+    <pre><code>&lt;p th:if="${usuario != null}"&gt;Bem-vindo, &lt;span th:text="${usuario.nome}"&gt;&lt;/span&gt;&lt;/p&gt;</code></pre>
+
+    <h3>3.2. Iterações (Loops)</h3>
+    <p>O atributo <code>th:each</code> permite iteração sobre listas. Exemplo:</p>
+    <pre><code>&lt;ul&gt;
+    &lt;li th:each="produto : ${produtos}" th:text="${produto.nome}"&gt;&lt;/li&gt;
+&lt;/ul&gt;
+        </code></pre>
+
+    <h2>4. Trabalhando com Fragmentos</h2>
+    <p>Os fragmentos em Thymeleaf permitem reutilização de código HTML em diferentes partes da aplicação.</p>
+
+    <h3>4.1. Definindo um Fragmento</h3>
+    <pre><code>&lt;div th:fragment="cabecalho"&gt;
+    &lt;h1&gt;Bem-vindo ao site!&lt;/h1&gt;
+&lt;/div&gt;
+        </code></pre>
+
+    <h3>4.2. Usando um Fragmento</h3>
+    <pre><code>&lt;div th:insert="fragments :: cabecalho"&gt;&lt;/div&gt;
+        </code></pre>
+
+    <h2>5. Formulários</h2>
+    <p>O Thymeleaf oferece suporte completo para formulários HTML e Spring. Abaixo está um exemplo simples de formulário
+        com binding de dados:</p>
+
+    <h3>5.1. Exemplo de Formulário</h3>
+    <pre><code>&lt;form th:action="@{/enviar}" method="post" th:object="${usuario}"&gt;
+    &lt;input type="text" th:field="*{nome}" /&gt;
+    &lt;input type="email" th:field="*{email}" /&gt;
+    &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;
+        </code></pre>
+    <p>Este formulário está associado a um objeto <code>usuario</code> no back-end e envia os dados para a URL <code>/enviar</code>.
+    </p>
+
+    <h2>6. Internacionalização</h2>
+    <p>Thymeleaf suporta internacionalização através do uso de arquivos de mensagens e o operador <code>#{...}</code>.
+        Exemplo:</p>
+    <pre><code>&lt;p th:text="#{mensagem.bemvindo}"&gt;Bem-vindo ao sistema!&lt;/p&gt;
+        </code></pre>
+
+    <h2>7. Templates Layout Dialect</h2>
+    <p>O layout dialect permite criar layouts de maneira mais organizada e reutilizável. Um exemplo de como incluir uma
+        página dentro de um layout:</p>
+    <pre><code>&lt;html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"&gt;
+&lt;head&gt;
+    &lt;title&gt;Layout Principal&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div layout:fragment="conteudo"&gt;Conteúdo será injetado aqui&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </code></pre>
+
+    <h2>Conclusão</h2>
+    <p>Thymeleaf 3.1.2 é uma poderosa ferramenta para gerar conteúdo dinâmico em aplicações web Java. Com ele, você pode
+        manipular dados de maneira eficiente, criar layouts reutilizáveis, e ainda suportar funcionalidades avançadas
+        como internacionalização e formulários.</p>
+
+    <h2>Referências</h2>
+    <ul>
+        <li><a href="https://www.thymeleaf.org/" target="_blank">Documentação Oficial do Thymeleaf</a></li>
+        <li><a href="https://spring.io/projects/spring-boot" target="_blank">Spring Boot</a></li>
+    </ul>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

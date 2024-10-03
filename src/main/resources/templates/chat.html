@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens - JavD</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/chat.css}"> <!-- Corrigido o nome do arquivo CSS -->
+</head>
+<body>
+
+<!-- Navbar -->
+<div th:insert="~{layout::nav}"></div>
+
+<div class="main-container">
+    <!-- Barra lateral com lista de remetentes -->
+    <div class="sidebar">
+        <h2>Contatos</h2>
+        <p th:if="${#lists.isEmpty(destinatarios)}">Você não tem contatos cadastrados!</p>
+        <div th:each="destinatario : ${destinatarios}">
+            <div class="contact" th:data-nome="${destinatario .nome}" th:data-endereco="${destinatario.endereco}"
+                 onclick="selectContact(this.dataset.nome,this.dataset.endereco)">
+                <img src="https://via.placeholder.com/30" th:alt="${destinatario .nome}">
+                <span th:text="${destinatario .nome}"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área de chat principal -->
+    <div class="chat-area">
+        <div class="chat-header" id="chat-header">
+            <img src="https://via.placeholder.com/40" alt="Contato">
+            <span id="contact-name">Escolha um contato</span>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+
+        </div>
+
+        <div class="message-input-container">
+            <input type="text" id="message-input" class="message-input" placeholder="Digite sua mensagem..." disabled>
+            <button class="message-send-btn" onclick="sendMessage()" disabled>Enviar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/chat.js"></script>
+<script>
+    function toggleMenu() {
+        const navList = document.querySelector('.nav-list');
+        navList.classList.toggle('active');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+.btn-disabled {
+    background-color: #e0e0e0;
+    color: #b0b0b0;
+    border-color: #e0e0e0;
+    opacity: 0.4;
+    transform: scale(0.7);
+    transition: transform 0.2s, opacity 0.2s;
+    pointer-events: none;
+}
+
+.btn-selecionado {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    opacity: 1;
+    transform: scale(1.7);
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+
+

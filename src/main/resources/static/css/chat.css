@@ -1,0 +1,205 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: url("/images/centauri.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Container principal */
+.main-container {
+    display: flex;
+    flex: 1;
+    padding-top: 0.5rem; /* Espaço entre navbar e o restante da página */
+    overflow: hidden;
+}
+
+/* Estilos para a barra lateral */
+.sidebar {
+    width: 25%;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    backdrop-filter: blur(10px);
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Estilos para a área de chat */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    margin-left: 10px;
+    backdrop-filter: blur(10px);
+    overflow-y: auto;
+}
+
+/* Cabeçalho do chat */
+.chat-header {
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chat-header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* Estilos para as mensagens */
+.chat-messages {
+    flex: 1; /* Permite que o contêiner cresça */
+    padding: 10px;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    margin-bottom: 5px;
+    backdrop-filter: blur(10px);
+    display: flex; /* Ativa o flexbox */
+    flex-direction: column; /* Coloca os itens em uma coluna */
+    align-items: flex-start; /* Alinha os balões à esquerda */
+}
+
+/* Container de entrada de mensagem */
+.message-input-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Estilos para o campo de entrada de mensagem */
+.message-input {
+    flex: 1;
+    padding: 10px; /* Aumentei o padding para mais conforto */
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.message-input:focus {
+    background-color: rgba(255, 255, 255, 0.2); /* Mudança de cor ao focar */
+    outline: none; /* Remove o contorno padrão */
+    transform: translateY(-1px); /* Pequena elevação ao focar */
+}
+
+/* Estilos para o botão de enviar */
+.message-send-btn {
+    margin-left: 5px;
+    padding: 10px 15px; /* Aumentei o padding para botões maiores */
+    background-color: rgba(0, 191, 255, 0.7);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s; /* Efeitos de transição */
+}
+
+.message-send-btn:hover {
+    background-color: rgba(0, 191, 255, 1); /* Cor do botão ao passar o mouse */
+    transform: translateY(-2px); /* Elevação ao passar o mouse */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ao passar o mouse */
+}
+
+.message-send-btn:active {
+    transform: translateY(1px); /* Efeito de pressionar o botão */
+    box-shadow: none; /* Remove sombra ao pressionar */
+}
+
+/* Estilos para os balões de mensagem */
+.message-bubble-sender, .message-bubble-receiver {
+    min-width: 100px; /* Largura mínima do balão */
+    max-width: 75%; /* Largura máxima do balão */
+    padding: 15px 20px; /* Espaçamento interno do balão */
+    margin: 5px 0; /* Espaçamento entre os balões */
+    border-radius: 20px; /* Bordas arredondadas para um efeito mais orgânico */
+    color: white; /* Cor do texto */
+    display: inline-block; /* Para que o balão se ajuste ao texto */
+    position: relative; /* Para posicionar o triângulo da ponta */
+    backdrop-filter: blur(10px); /* Efeito de desfoque no fundo */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Sombra para efeito 3D */
+}
+
+/* Estilo do balão de mensagem do remetente */
+.message-bubble-sender {
+    background: rgba(0, 191, 255, 0.5); /* Azul translúcido */
+    border: 1px solid rgba(0, 191, 255, 0.8); /* Borda mais clara para efeito de vidro */
+    align-self: flex-end; /* Alinha à direita */
+}
+
+/* Estilo do triângulo do balão do remetente */
+.message-bubble-sender::after {
+    content: '';
+    position: absolute;
+    bottom: 100%; /* Posição acima do balão */
+    right: 10%; /* Ajuste a posição do triângulo */
+    margin-right: -5px; /* Centraliza o triângulo */
+    border-width: 8px; /* Largura do triângulo */
+    border-style: solid;
+    border-color: transparent transparent rgba(0, 191, 255, 0.5) transparent; /* Cores do triângulo */
+}
+
+/* Estilo do balão de mensagem do destinatário */
+.message-bubble-receiver {
+    background: rgba(75, 0, 130, 0.5); /* Roxo translúcido */
+    border: 1px solid rgba(75, 0, 130, 0.8); /* Borda mais clara para efeito de vidro */
+    align-self: flex-start; /* Alinha à esquerda */
+}
+
+/* Estilo do triângulo do balão do destinatário */
+.message-bubble-receiver::after {
+    content: '';
+    position: absolute;
+    bottom: 100%; /* Posição acima do balão */
+    left: 10%; /* Ajuste a posição do triângulo */
+    margin-left: -5px; /* Centraliza o triângulo */
+    border-width: 8px; /* Largura do triângulo */
+    border-style: solid;
+    border-color: transparent transparent rgba(75, 0, 130, 0.5) transparent; /* Cores do triângulo */
+}
+
+/* Estilo da imagem do contato */
+.contact img {
+    width: 30px; /* Tamanho da imagem */
+    height: 30px; /* Tamanho da imagem */
+    border-radius: 50%; /* Forma redonda */
+    margin-right: 10px; /* Espaço entre a imagem e o texto */
+}
+
+/* Estilo dos botões na barra lateral */
+.contact {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0; /* Espaço entre os botões */
+    background: rgba(255, 255, 255, 0.2); /* Fundo translúcido */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s; /* Efeitos de transição */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra dos botões */
+}
+
+/* Efeito ao passar o mouse sobre os botões de contato */
+.contact:hover {
+    background: rgba(255, 255, 255, 0.4); /* Aumento da opacidade ao passar o mouse */
+    transform: translateY(-2px); /* Levanta o botão */
+}

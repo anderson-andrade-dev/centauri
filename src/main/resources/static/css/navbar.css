@@ -1,0 +1,111 @@
+/* Estilos da Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    width: 100%;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    color: white;
+    text-decoration: none;
+    flex: 1;
+}
+
+/* Form Inline alinhado à direita */
+.form-inline {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0.13;
+}
+
+.form-inline input {
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    margin-right: 10px;
+    background-color: transparent;
+    color: white;
+}
+
+/* Estilo do botão acrílico no form inline */
+.form-inline .btn-acrilico {
+    padding: 10px 15px;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 191, 255, 0.3); /* Fundo mais opaco */
+    border-radius: 15px;
+    border: 2px solid rgba(0, 191, 255, 0.8); /* Borda mais visível */
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.6); /* Sombra mais pronunciada */
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de luz e profundidade ao passar o mouse no botão */
+.form-inline .btn-acrilico::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 50%);
+    transform: rotate(-45deg);
+    transition: all 0.6s ease-in-out;
+    opacity: 0;
+}
+
+.form-inline .btn-acrilico:hover::before {
+    opacity: 1;
+    transform: rotate(0deg) translate(50%, 50%);
+}
+
+/* Profundidade ao pressionar */
+.form-inline .btn-acrilico:active {
+    box-shadow: 0 4px 16px rgba(31, 38, 135, 0.4);
+    transform: translateY(2px);
+}
+
+/* Responsividade para tablets e telas menores */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 8px 15px;
+    }
+
+    .form-inline .btn-acrilico {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-inline {
+        margin-top: 10px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 5px 10px;
+    }
+
+    .form-inline .btn-acrilico {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}

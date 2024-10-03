@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:fragment="nav">
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img th:src="@{/images/centauri.png}" height="70">
+        </div>
+        <form class="form-inline" th:action="@{/}" th:method="get">
+            <button class="btn-acrilico" type="submit"><i class="fas fa-home fa-2x"></i></button>
+        </form>
+        <form class="form-inline" th:action="@{/publicacao}" th:method="post">
+            <button class="btn-acrilico" type="submit"><i class="fa-regular fa-pen-to-square fa-2x"></i></button>
+        </form>
+        <form class="form-inline" th:action="@{/chat/principal}" th:method="get">
+            <button class="btn-acrilico" type="submit"><i class="fa-regular fa-message fa-2x"></i></button>
+        </form>
+        <form class="form-inline" th:action="@{/chat/principal}" th:method="get">
+            <button class="btn-acrilico"><i class="fa-regular fa-user fa-2x" aria-hidden="true"></i></button>
+        </form>
+    </nav>
+</div>
+<div th:fragment="footer">
+
+</div>
+<script defer th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script defer th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script defer th:src="@{/fontawesome/js/all.js}"></script>
+<script defer th:src="@{/js/bootstrap.js}"></script>
+<script defer th:src="@{/js/centauri.js}" th:type="module"></script>
+<script defer th:src="@{/js/section-dois.js}"></script>
+<script defer th:src="@{/js/likeDislike.js}"></script>
+</body>
+</html>

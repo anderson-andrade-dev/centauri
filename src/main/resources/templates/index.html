@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/Logo-Exp7orer.png" type="image/x-icon">
+    <title>JavD</title>
+
+    <link rel="stylesheet" th:href="@{css/navbar.css}">
+    <link rel="stylesheet" th:href="@{css/section-um.css}">
+    <link rel="stylesheet" th:href="@{css/section-dois.css}">
+
+    <!-- Font Awesome and ScrollReveal -->
+    <script defer src="https://unpkg.com/scrollreveal"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script defer src="https://kit.fontawesome.com/42dd8431f9.js" crossorigin="anonymous"></script>
+
+    <!-- Styles for Glassmorphism -->
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-image: url('/images/centauri.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        nav.navbar {
+            width: 100dvw;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 4px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        nav.navbar .logo img {
+            width: 7%;
+            height: 7%;
+        }
+
+        .section-um {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .section-um .caixa-fundo {
+            padding: 50px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        .gallery .card {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-inner {
+            position: relative;
+            perspective: 1000px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .card:hover .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            color: #333;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="" class="logo">
+        <img th:src="@{images/centauri.png}" alt="Explorer">
+    </a>
+
+    <button class="hamburger"></button>
+
+    <ul class="nav-list">
+        <li><a class="links" th:href="login">Login</a></li>
+        <li><a class="links" th:href="cadastro">Cadastrar</a></li>
+    </ul>
+</nav>
+
+<main>
+    <section class="section-um">
+        <div class="fundo"></div>
+        <div class="caixa-fundo">
+            <div class="exp7orer">
+                <h3>Um universo de ideias</h3>
+                <p>Vire a imagem e mergulhe em histórias, <br>conceitos ou ideias. O que está escondido <br> atrás do
+                    seu
+                    próximo clique?</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-dois">
+        <div class="gallery">
+            <div th:each="publicacao : ${listaPublicacao}" class="card reveal">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <img th:src="@{imagens/publicacao/{id}(id=${publicacao.id})}" alt="Imagem Aleatória"/>
+                    </div>
+                    <div class="card-back">
+                        <textarea readonly id="textoCard" th:text="${publicacao.titulo + publicacao.texto}"></textarea>
+                    </div>
+                </div>
+                <div class="like">
+                    <p th:text="${publicacao.usuario.nome}"></p>
+                    <div class="estrela">
+                        <input type="button" id="estrela-like" class="estrela-like" th:attr="data-id=${publicacao.id}">
+                        <i class="starIcon fa-regular fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Scripts -->
+<script defer th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script defer th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script defer th:src="@{/fontawesome/js/all.js}"></script>
+<script defer th:src="@{/js/bootstrap.js}"></script>
+<script defer th:src="@{/js/centauri.js}" th:type="module"></script>
+<script defer th:src="@{/js/section-dois.js}"></script>
+<script defer th:src="@{/js/likeDislike.js}"></script>
+</body>
+
+</html>
