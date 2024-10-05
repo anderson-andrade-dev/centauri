@@ -27,7 +27,7 @@ public class MensagemModel {
         if (usuario != null) {
             MensagemUsuario mensagemSistema = new MensagemUsuario(usuario, mensagem);
             usuario.setMessagesSystem(List.of(mensagemSistema));
-            usuarioService.salvarUsuario(usuario);
+            usuarioService.salva(usuario);
         }
     }
 

@@ -1,13 +1,12 @@
 package br.dev.andersonandrade.centauri.controller;
 
 import br.dev.andersonandrade.centauri.entity.Usuario;
-import br.dev.andersonandrade.centauri.interfaces.Destinatario;
+import br.dev.andersonandrade.centauri.exceptions.UsuarioNaoEncontradoException;
 import br.dev.andersonandrade.centauri.model.MensagemModel;
 import br.dev.andersonandrade.centauri.model.PublicacaoModel;
 import br.dev.andersonandrade.centauri.model.UsuarioService;
 import br.dev.andersonandrade.centauri.record.DestinatarioRecord;
 import br.dev.andersonandrade.centauri.record.UsuarioRecord;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
@@ -18,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "cadastro")
@@ -38,7 +38,8 @@ public class CadastroController {
     @PostMapping
     public String cadastro(UsuarioRecord usuario, Model model) {
         try {
-            Usuario usuarioBanco = usuarioService.salvar(usuario);
+            Usuario usuarioBanco = usuarioService.salva(usuario)
+                    .orElseThrow(()-> new UsuarioNaoEncontradoException("Erro ao Cadastro Usuario!"));
             model.addAttribute("mensagem", "Entre no email para ativar o seu cadastro!");
             return "login";
         } catch (DataIntegrityViolationException e) {
@@ -49,7 +50,12 @@ public class CadastroController {
             model.addAttribute("erroCadastro", true);
             model.addAttribute("mensagem", "e");
             return "cadastro";
+        }catch (UsuarioNaoEncontradoException e){
+            model.addAttribute("erroCadastro", true);
+            model.addAttribute("mensagem", "e");
+            return "cadastro";
         }
+
     }
 
 
@@ -64,14 +70,12 @@ public class CadastroController {
             RedirectAttributes attributes) {
 
         UsuarioRecord record = new UsuarioRecord(nome, sobreNome, nomeUsuario, senha, email);
-        Usuario atualizarUsuario = usuarioService.editarUsuario(codigoUsuario, record);
+        Optional<Usuario> atualizarUsuario = usuarioService.editarUsuario(codigoUsuario, record);
 
-        if (atualizarUsuario != null) {
-            return "redirect:/";
-        } else {
+        if (atualizarUsuario.isEmpty()) {
             attributes.addFlashAttribute("mensagem", "Erro ao atualizar usuário.");
-            return "redirect:/"; // Talvez uma outra rota para quando der erro
         }
+        return "redirect:/";
     }
 
     @GetMapping("ativar")

@@ -13,10 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Classe ChatModel
@@ -57,13 +54,8 @@ public class ChatModel {
      * @throws IllegalArgumentException se a mensagem estiver vazia ou se o remetente/destinatário forem nulos.
      */
     public void enviar(@NotNull Remetente remetente, @NotNull Destinatario destinatario, @NotNull Mensagem mensagem) {
-        if (remetente == null || destinatario == null) {
-            throw new IllegalArgumentException("Remetente e destinatário não podem ser nulos.");
-        }
-        if (mensagem.getConteudo() == null || mensagem.getConteudo().isEmpty()) {
-            throw new IllegalArgumentException("A mensagem não pode ser vazia.");
-        }
-
+        Objects.requireNonNull(remetente, "Remetente não pode ser nulo!");
+        Objects.requireNonNull(destinatario, "Destinatario não pode ser nulo");
         SalaChat salaChat = SalaChat.abrir(remetente, destinatario).adicionarMensagemDestinatario(mensagem);
         correio.recebeMensagem(destinatario, remetente, mensagem, Prioridade.URGENTE);
     }
@@ -80,13 +72,10 @@ public class ChatModel {
      * @throws IllegalArgumentException se o usuário não for encontrado ou se a mensagem estiver vazia.
      */
     public void enviar(@NotNull String emailRemetente, @NotNull Destinatario destinatario, @NotNull Mensagem mensagem) {
-        Usuario usuario = usuarioService.buscaPorEmail(emailRemetente);
-        if (usuario != null) {
-            Remetente remetente = new RemetenteRecord(usuario.getNome(), usuario.getLogin().getEmail());
-            enviar(remetente, destinatario, mensagem);
-        } else {
-            throw new IllegalArgumentException("Verifique os parâmetros! O usuário não foi encontrado.");
-        }
+        Usuario usuario = Objects.requireNonNull(usuarioService.buscaPorEmail(emailRemetente),
+                "Verifique o email o remetente não foi encontrado no sistema!");
+        Remetente remetente = new RemetenteRecord(usuario.getNome(), usuario.getLogin().getEmail());
+        this.enviar(remetente, destinatario, mensagem);
     }
 
     /**
@@ -121,6 +110,9 @@ public class ChatModel {
      * @return Um registro contendo as mensagens enviadas e recebidas entre o usuário e o destinatário.
      */
     public ChatMensagemRecord mensagens(@NotNull String email, @NotNull Destinatario destinatario) {
+        validaEndereco(email, "email");
+        Objects.requireNonNull(destinatario, "Destinatario não pode ser nulo!");
+        validaEndereco(destinatario.endereco(), "destinatario");
         Usuario usuario = usuarioService.buscaPorEmail(email);
         if (usuario != null) {
             RemetenteRecord remetente = new RemetenteRecord(usuario.getNome(), usuario.getLogin().getEmail());
@@ -142,5 +134,44 @@ public class ChatModel {
         }
 
         return new ChatMensagemRecord(List.of(), List.of());
+    }
+
+    /**
+     * Associa um remetente a um destinatário.
+     * <p>
+     * Este método verifica se o remetente e o destinatário são válidos e se
+     * seus endereços de e-mail não são nulos ou em branco. Se ambos os usuários
+     * forem válidos, o método os associa no sistema.
+     *
+     * @param remetente    O remetente a ser associado ao destinatário. Não deve ser nulo.
+     * @param destinatario O destinatário a ser associado ao remetente. Não deve ser nulo.
+     * @throws NullPointerException     se o remetente ou o destinatário forem nulos.
+     * @throws IllegalArgumentException se o endereço do remetente ou do destinatário estiver em branco.
+     */
+    public void associaRemetenteDestinatario(@NotNull Remetente remetente, @NotNull Destinatario destinatario) {
+        Objects.requireNonNull(remetente,
+                "Verifique o Remetente não pode ser nulo! ");
+        Objects.requireNonNull(destinatario,
+                "Verifique o Destinatario não pode ser nulo!");
+        validaEndereco(remetente.endereco(), "remetente");
+        validaEndereco(destinatario.endereco(), "destinatario");
+        usuarioService.associarRemetenteDestinatario(remetente, destinatario);
+    }
+
+    /**
+     * Este método verifica se o endereço não é nulo e se não contém apenas
+     * espaços em branco. Se a validação falhar, uma exceção apropriada é lançada.
+     * <p>
+     *
+     * @param endereco      O endereço a ser validado. Não deve ser nulo ou em branco.
+     * @param nomeParametro O nome do parâmetro para ser utilizado nas mensagens de erro.
+     * @throws NullPointerException     se o endereço for nulo.
+     * @throws IllegalArgumentException se o endereço estiver em branco.
+     */
+    private void validaEndereco(String endereco, String nomeParametro) {
+        Objects.requireNonNull(endereco, "O endereço do " + nomeParametro + " não pode ser nulo!");
+        if (endereco.isBlank()) {
+            throw new IllegalArgumentException("O endereço do " + nomeParametro + " não pode estar em branco!");
+        }
     }
 }
