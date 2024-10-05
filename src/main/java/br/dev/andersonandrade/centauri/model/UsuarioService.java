@@ -15,6 +15,8 @@ import br.dev.andersonandrade.centauri.service.RemetenteDestinatarioService;
 import br.dev.andersonandrade.centauri.service.SenhaService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,7 @@ public class UsuarioService {
     private final SenhaService senhaService;
     private final RemetenteDestinatarioService remetenteDestinatarioService;
     private final LoginRepository loginRepository;
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, EmailService emailService,
@@ -59,10 +62,19 @@ public class UsuarioService {
     public Optional<Usuario> salva(UsuarioRecord usuarioRecord) {
         validaUsuarioRecord(usuarioRecord);
 
+        logger.info("Salvando Usuário com email: {}", usuarioRecord.email());
+
         Usuario usuario = new Usuario(usuarioRecord,
                 new Senha(senhaService.criptografar(usuarioRecord.senha())));
+
         usuarioRepository.save(usuario);
-        enviarEmailDeAtivacao(usuario);
+        try {
+            enviarEmailDeAtivacao(usuario);
+        } catch (EmailException e) {
+            logger.error("Erro ao enviar email de validação", e);
+            throw e;
+        }
+        logger.info("Usuário salvo com sucesso: {}", usuarioRecord.email());
         return Optional.of(usuario);
     }
 
@@ -74,8 +86,10 @@ public class UsuarioService {
 
     /**
      * Envia um e-mail de ativação para o usuário.
+     * Lança EmailException em caso de erro ao enviar o e-mail.
      *
      * @param usuario O usuário para o qual o e-mail de ativação será enviado.
+     * @throws EmailException Se houver erro no envio do e-mail.
      */
     private void enviarEmailDeAtivacao(Usuario usuario) {
         try {
@@ -90,56 +104,58 @@ public class UsuarioService {
      *
      * @param email O e-mail do usuário.
      * @return O usuário encontrado ou null se não existir.
+     * @throws EmailException se o email não estivar no formato correto.
      */
-    public Usuario buscaPorEmail(String email) {
-        return usuarioRepository.findByLogin_Email(email).orElse(null);
+    public Optional<Usuario> buscaPorEmail(String email) {
+        emailService.validaEmail(email);
+        return usuarioRepository.findByLogin_Email(email);
     }
 
     /**
      * Busca um usuário pelo seu código.
      *
      * @param codigo O código do usuário a ser buscado.
-     * @return O usuário encontrado ou null se não existir.
+     * @return Um Optional.
      */
     @Transactional
-    public Usuario buscarPorCodigo(String codigo) {
-        return usuarioRepository.findByCodigo(codigo).orElse(null);
+    public Optional<Usuario> buscarPorCodigo(String codigo) {
+        return usuarioRepository.findByCodigo(codigo);
     }
 
     /**
      * Busca um usuário pelo e-mail e senha.
+     * Valida o formato do e-mail e da senha antes de buscar.
      *
      * @param senha A senha do usuário.
      * @param email O e-mail do usuário.
-     * @return O usuário encontrado ou null se não existir.
+     * @return O usuário encontrado ou Optional vazio.
+     * @throws NullPointerException Se a senha ou o email for nulo.
+     * @throws IllegalArgumentException Se a senha ou email estiver em branco, vazio ou com formato inválido.
      */
     @Transactional(readOnly = true)
-    public Usuario buscarPorEmailESenha(@NotNull String senha, @NotNull String email) {
+    public Optional<Usuario> buscarPorEmailESenha(@NotNull String senha, @NotNull String email) {
         validaString(senha, "senha");
         validaString(email,"email");
+        emailService.validaEmail(email);
+        senhaService.validaSenha(senha);
 
-        return usuarioRepository.findAll().stream()
-                .filter(usuario -> usuario.getLogin().getEmail().equals(email))
-                .filter(usuario -> usuario.getLogin().getSenha().getChave().equals(senha))
-                .filter(usuario -> usuario.getLogin().isAtivo())
-                .findFirst()
+        return usuarioRepository.findByEmailAndSenha(email, senha)
                 .map(usuario -> {
-                    usuario.getMessagesSystem().size();  // Carrega mensagens
-                    usuario.getPublicacoes().size();      // Carrega publicações
+                    usuario.getMessagesSystem().size();
+                    usuario.getPublicacoes().size();
                     return usuario;
-                })
-                .orElse(null);
+                });
     }
 
     /**
      * Edita os dados de um usuário existente.
+     * Lança exceções se os parâmetros ou os dados fornecidos forem inválidos.
      *
      * @param codigoUsuario O código do usuário a ser editado.
      * @param record        O novo registro do usuário.
-     * @return O usuário editado ou null se o usuário não existir devolve um Optional.
-     * @throws NullPointerException Se o objeto record for nulo ou o codigoUsuario for nulo.
-     * @throws IllegalArgumentException Se qualquer um dos campos obrigatórios
-     * (nome, sobrenome, nome de usuário senha, ou codigo usuário) estiver em branco.
+     * @return O usuário editado ou Optional vazio se não for encontrado.
+     * @throws NullPointerException Se o objeto record ou o codigoUsuario forem nulos.
+     * @throws IllegalArgumentException Se qualquer campo obrigatório (nome, sobrenome, nome de usuário, senha ou código do usuário) estiver em branco.
      */
     public Optional<Usuario> editarUsuario(String codigoUsuario, @NotNull UsuarioRecord record) {
         validaString(codigoUsuario,"codigoUsuario");
@@ -241,13 +257,12 @@ public class UsuarioService {
      * @throws NullPointerException Se o objeto record for nulo.
      * @throws IllegalArgumentException Se qualquer um dos campos obrigatórios (nome, sobrenome, nome de usuário ou senha) estiver em branco.
      */
-    private static void validaUsuarioRecord(UsuarioRecord record) {
+    private void validaUsuarioRecord(UsuarioRecord record) {
         Objects.requireNonNull(record,"O parâmetro record não pode ser nulo!");
         validaString(record.nomeUsuario(),"nomeUsuario");
         validaString(record.sobreNome(),"sobreNome");
         validaString(record.nome(),"nome");
-        validaString(record.senha(),"Senha");
+        senhaService.validaSenha(record.senha());
     }
-
 
 }

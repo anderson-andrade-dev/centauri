@@ -106,11 +106,11 @@ public class CadastroController {
         if(email.isEmpty() || email.isBlank()){
             throw new IllegalArgumentException("A String do parametro não pode ser vazia ou estar em branco!");
         }
-        Usuario usuario = usuarioService.buscaPorEmail(email);
-        if (Objects.isNull(usuario)) {
+        Optional<Usuario> usuario = usuarioService.buscaPorEmail(email);
+        if (!usuario.isPresent()) {
             return List.of();
         }
-        DestinatarioRecord destinatario = new DestinatarioRecord(usuario.getNome(), usuario.getLogin().getEmail());
+        DestinatarioRecord destinatario = new DestinatarioRecord(usuario.get().getNome(), usuario.get().getLogin().getEmail());
         return List.of(destinatario);
     }
 

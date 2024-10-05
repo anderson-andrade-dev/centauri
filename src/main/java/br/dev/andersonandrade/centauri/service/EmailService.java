@@ -1,6 +1,7 @@
 package br.dev.andersonandrade.centauri.service;
 
 import br.dev.andersonandrade.centauri.entity.Usuario;
+import br.dev.andersonandrade.centauri.exceptions.EmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -103,6 +104,19 @@ public class EmailService {
         // Envia o email
         mailSender.send(mimeMessage);
         logger.info("Email de ativação enviado para: {}", usuario.getLogin().getEmail());
+    }
+
+    /**
+     * Valida o formato de um e-mail.
+     *
+     * @param email O e-mail a ser validado.
+     * @throws EmailException Se o formato do e-mail for inválido.
+     */
+    public void validaEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        if (!email.matches(emailRegex)) {
+            throw new EmailException("Formato de e-mail inválido: " + email);
+        }
     }
 
     /**

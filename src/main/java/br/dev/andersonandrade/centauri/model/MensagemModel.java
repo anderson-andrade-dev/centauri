@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class MensagemModel {
@@ -33,25 +34,29 @@ public class MensagemModel {
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = Exception.class)
     public List<Mensagem> lista(Usuario usuario) {
-        Usuario usuarioBanco = usuarioService.buscarPorCodigo(usuario.getCodigo());
-        if (usuarioBanco.getMessagesSystem() != null || !usuarioBanco.getMessagesSystem().isEmpty()) {
-            return new ArrayList<>(usuarioBanco.getMessagesSystem());
-        } else {
-            return List.of(new MensagemUsuario(null, "Você não tem mensagens!"));
+        Optional<Usuario> usuarioBanco = usuarioService.buscarPorCodigo(usuario.getCodigo());
+        if (usuarioBanco.isPresent()) {
+            if (usuarioBanco.get().getMessagesSystem() != null || !usuarioBanco.get().getMessagesSystem().isEmpty()) {
+                return List.copyOf(usuarioBanco.get().getMessagesSystem());
+            }
         }
+            return List.of(new MensagemUsuario(null, "Você não tem mensagens!"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = Exception.class)
     public CaixaMensagem criaCaixaMensagem(Usuario usuario) {
-        Usuario usuarioBanco = usuarioService.buscarPorCodigo(usuario.getCodigo());
-        List<MensagemUsuario> mensagemSistema = usuarioBanco.getMessagesSystem()
-                .stream()
-                .filter(m -> !m.isLida()).toList();
+        Optional<Usuario> usuarioBanco = usuarioService.buscarPorCodigo(usuario.getCodigo());
 
-        if (!mensagemSistema.isEmpty()) {
-            return new CaixaMensagem(new ArrayList<>(mensagemSistema), usuario);
+        if(usuarioBanco.isPresent()) {
+
+            List<MensagemUsuario> mensagemSistema = usuarioBanco.get().getMessagesSystem();
+                  mensagemSistema.stream()
+                    .filter(m -> !m.isLida()).toList();
+
+            if (!mensagemSistema.isEmpty()) {
+                return new CaixaMensagem(List.copyOf(mensagemSistema), usuario);
+            }
         }
-
         return new CaixaMensagem(List.of(new MensagemUsuario(null, "Você não tem mensagens!")), usuario);
     }
 }

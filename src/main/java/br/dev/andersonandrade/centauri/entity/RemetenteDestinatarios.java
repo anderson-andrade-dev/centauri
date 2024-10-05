@@ -1,6 +1,5 @@
 package br.dev.andersonandrade.centauri.entity;
 
-import br.dev.andersonandrade.centauri.interfaces.Destinatario;
 import br.dev.andersonandrade.centauri.interfaces.Remetente;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -34,12 +33,10 @@ public class RemetenteDestinatarios implements Serializable {
         //Obrigatorio JPA
     }
 
-    public RemetenteDestinatarios(@NotNull Remetente remetente, @NotNull Destinatario destinatario) {
+    public RemetenteDestinatarios(@NotNull Remetente remetente){
         Objects.requireNonNull(remetente.endereco(), "Endereco do remetente não pode ser nulo!");
-        Objects.requireNonNull(destinatario.endereco(), "Endereco do destinatario não pode ser nulo!");
         this.endereco = remetente.endereco();
         enderecoDestinatarios = new HashSet<>();
-        enderecoDestinatarios.add(destinatario.endereco());
     }
 
     public Long getId() {
@@ -62,8 +59,8 @@ public class RemetenteDestinatarios implements Serializable {
         return enderecoDestinatarios;
     }
 
-    public void setEnderecoDestinatarios(Set<String> enderecoRemetentes) {
-        this.enderecoDestinatarios = enderecoRemetentes;
+    public void setEnderecoDestinatarios(Set<String> enderecoDestinatarios) {
+        this.enderecoDestinatarios = enderecoDestinatarios;
     }
 
     @Override
@@ -71,8 +68,7 @@ public class RemetenteDestinatarios implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RemetenteDestinatarios that = (RemetenteDestinatarios) o;
-        return Objects.equals(id, that.id) && Objects.equals(endereco, that.endereco) &&
-                Objects.equals(enderecoDestinatarios, that.enderecoDestinatarios);
+        return Objects.equals(id, that.id) && Objects.equals(endereco, that.endereco) && Objects.equals(enderecoDestinatarios, that.enderecoDestinatarios);
     }
 
     @Override
@@ -85,7 +81,7 @@ public class RemetenteDestinatarios implements Serializable {
         return "RemetenteDestinatarios{" +
                 "id=" + id +
                 ", endereco='" + endereco + '\'' +
-                ", enderecoRemetentes=" + enderecoDestinatarios +
+                ", enderecoDestinatarios=" + enderecoDestinatarios +
                 '}';
     }
 }

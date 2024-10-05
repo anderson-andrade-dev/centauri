@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 /**
  * @author Anderson Andrade Dev
  * @Data de Criação 05/10/2024
@@ -17,6 +15,7 @@ public class SenhaService {
     public SenhaService() {
         this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
+
 
     public String criptografar(@NotNull String senha) {
         validaSenha(senha);
@@ -30,10 +29,18 @@ public class SenhaService {
         return bCryptPasswordEncoder.matches(senha, senhaCriptografada);
     }
 
-    private static void validaSenha(String senha) {
-        Objects.requireNonNull(senha, "Senha não pode ser nula!");
-        if (senha.isBlank()) {
-            throw new IllegalArgumentException("Senha não pode ser uma String vazia ou em branco!");
+    /**
+     * Valida a força de uma senha, garantindo que ela tenha pelo menos 8 caracteres e contenha um caractere especial.
+     *
+     * @param senha A senha a ser validada.
+     * @throws IllegalArgumentException Se a senha não atender aos critérios mínimos de segurança.
+     */
+    public void validaSenha(String senha) {
+        if (senha.length() < 8) {
+            throw new IllegalArgumentException("A senha deve ter pelo menos 8 caracteres.");
+        }
+        if (!senha.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new IllegalArgumentException("A senha deve conter pelo menos um caractere especial.");
         }
     }
 }

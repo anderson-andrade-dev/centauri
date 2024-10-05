@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Optional;
+
 
 @Controller
 public class LoginController {
@@ -46,11 +48,12 @@ public class LoginController {
     static void informacaoUsuario(Model model, String userName,
                                   UsuarioService usuarioService, MensagemModel mensagemModel,
                                   PublicacaoModel publicacaoModel) {
-        Usuario usuario = usuarioService.buscaPorEmail(userName);
-        LikePublicacao likePublicacao = publicacaoModel.rankComLike(usuario);
-        model.addAttribute("usuario", usuario);
-        model.addAttribute("caixaDeMensagem", mensagemModel.criaCaixaMensagem(usuario));
-        model.addAttribute("publicacaoLikes", likePublicacao.getLikesPublicacoes());
+        Optional<Usuario> usuario = usuarioService.buscaPorEmail(userName);
+        if (usuario.isPresent()) {
+            LikePublicacao likePublicacao = publicacaoModel.rankComLike(usuario.get());
+            model.addAttribute("usuario", usuario.get());
+            model.addAttribute("caixaDeMensagem", mensagemModel.criaCaixaMensagem(usuario.get()));
+            model.addAttribute("publicacaoLikes", likePublicacao.getLikesPublicacoes());
+        }
     }
-
 }

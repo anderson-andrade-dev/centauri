@@ -3,6 +3,7 @@ package br.dev.andersonandrade.centauri.model;
 import br.dev.andersonandrade.centauri.beans.SalaChat;
 import br.dev.andersonandrade.centauri.entity.Usuario;
 import br.dev.andersonandrade.centauri.enumeradores.Prioridade;
+import br.dev.andersonandrade.centauri.exceptions.RemetenteNaoEncotradoException;
 import br.dev.andersonandrade.centauri.interfaces.Destinatario;
 import br.dev.andersonandrade.centauri.interfaces.Mensagem;
 import br.dev.andersonandrade.centauri.interfaces.Remetente;
@@ -69,12 +70,12 @@ public class ChatModel {
      * @param emailRemetente O e-mail do remetente.
      * @param destinatario   O destinatário da mensagem.
      * @param mensagem       A mensagem a ser enviada.
-     * @throws IllegalArgumentException se o usuário não for encontrado ou se a mensagem estiver vazia.
+     * @throws RemetenteNaoEncotradoException se o remetente não for encontrado ou se a mensagem estiver vazia.
      */
     public void enviar(@NotNull String emailRemetente, @NotNull Destinatario destinatario, @NotNull Mensagem mensagem) {
-        Usuario usuario = Objects.requireNonNull(usuarioService.buscaPorEmail(emailRemetente),
-                "Verifique o email o remetente não foi encontrado no sistema!");
-        Remetente remetente = new RemetenteRecord(usuario.getNome(), usuario.getLogin().getEmail());
+        Optional<Usuario> usuario = usuarioService.buscaPorEmail(emailRemetente);
+        usuario.orElseThrow(()-> new RemetenteNaoEncotradoException("Verifique o email o remetente não foi encontrado no sistema!"));
+        Remetente remetente = new RemetenteRecord(usuario.get().getNome(), usuario.get().getLogin().getEmail());
         this.enviar(remetente, destinatario, mensagem);
     }
 
@@ -113,9 +114,9 @@ public class ChatModel {
         validaEndereco(email, "email");
         Objects.requireNonNull(destinatario, "Destinatario não pode ser nulo!");
         validaEndereco(destinatario.endereco(), "destinatario");
-        Usuario usuario = usuarioService.buscaPorEmail(email);
-        if (usuario != null) {
-            RemetenteRecord remetente = new RemetenteRecord(usuario.getNome(), usuario.getLogin().getEmail());
+        Optional<Usuario> usuario = usuarioService.buscaPorEmail(email);
+        if (usuario.isPresent()) {
+            RemetenteRecord remetente = new RemetenteRecord(usuario.get().getNome(), usuario.get().getLogin().getEmail());
             SalaChat salaChat = SalaChat.abrir(remetente, destinatario);
 
             // Recupera mensagens enviadas e recebidas

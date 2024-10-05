@@ -1,4 +1,4 @@
-package br.dev.andersonandrade.centauri.beans.model;
+package br.dev.andersonandrade.centauri.model;
 
 import br.dev.andersonandrade.centauri.entity.Senha;
 import br.dev.andersonandrade.centauri.entity.Usuario;
@@ -7,6 +7,7 @@ import br.dev.andersonandrade.centauri.interfaces.Mensagem;
 import br.dev.andersonandrade.centauri.model.ChatModel;
 import br.dev.andersonandrade.centauri.model.UsuarioService;
 import br.dev.andersonandrade.centauri.record.ChatMensagemRecord;
+import br.dev.andersonandrade.centauri.record.DestinatarioRecord;
 import br.dev.andersonandrade.centauri.record.RemetenteRecord;
 import br.dev.andersonandrade.centauri.record.UsuarioRecord;
 import br.dev.andersonandrade.centauri.service.CorreioMensagem;
@@ -18,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +50,7 @@ class ChatModelTest {
                 "anderson", "1234", email), new Senha("1234"));
 
 
-        Destinatario destinatario = mock(Destinatario.class);
+        Destinatario destinatario = new DestinatarioRecord("Andreza","teste@teste.com");
 
         Mensagem mensagem1 = mock(Mensagem.class);
         Mensagem mensagem2 = mock(Mensagem.class);
@@ -57,7 +59,7 @@ class ChatModelTest {
         when(mensagem2.getDataEnvio()).thenReturn(LocalDateTime.of(2023, 9, 26, 12, 0));
 
         // Simula o usuário retornado pela busca de email
-        when(usuarioService.buscaPorEmail(email)).thenReturn(usuario);
+        when(usuarioService.buscaPorEmail(email)).thenReturn(Optional.of(usuario));
 
         // Simula o correio retornando mensagens para o remetente e destinatário
         when(correio.mensagens(any(RemetenteRecord.class))).thenReturn(List.of(mensagem1));

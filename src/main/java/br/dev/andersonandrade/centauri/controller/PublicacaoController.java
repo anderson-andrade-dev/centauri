@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 import static br.dev.andersonandrade.centauri.controller.LoginController.informacaoUsuario;
 
 
@@ -49,9 +51,11 @@ public class PublicacaoController {
                          Authentication authentication, Model model) {
 
         if (authentication != null) {
-            Usuario usuarioBanco = usuarioService.buscaPorEmail(authentication.getName());
-            publicacaoModel.salvarPublicacao(usuarioBanco, texto, imagem);
-            return "forward:minha-pagina";
+            Optional<Usuario> usuarioBanco = usuarioService.buscaPorEmail(authentication.getName());
+            if(usuarioBanco.isPresent()){
+                publicacaoModel.salvarPublicacao(usuarioBanco.get(), texto, imagem);
+                return "forward:minha-pagina";
+            }
         }
         return "redirect:/";
     }
@@ -60,9 +64,9 @@ public class PublicacaoController {
     public String formEditar(Long id, Authentication authentication, Model model) {
         if (authentication != null) {
             Publicacao publicacao = publicacaoModel.buscaId(id);
-            Usuario usuarioBanco = usuarioService.buscaPorEmail(authentication.getName());
+            Optional<Usuario> usuarioBanco = usuarioService.buscaPorEmail(authentication.getName());
             model.addAttribute("usuario", usuarioBanco);
-            model.addAttribute("caixaDeMensagem", mensagemModel.criaCaixaMensagem(usuarioBanco));
+            model.addAttribute("caixaDeMensagem", mensagemModel.criaCaixaMensagem(usuarioBanco.get()));
             model.addAttribute("publicacao", publicacao);
             return "edita-publicacao";
         }

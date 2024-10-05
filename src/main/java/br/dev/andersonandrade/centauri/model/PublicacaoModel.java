@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Component
@@ -37,11 +38,11 @@ public class PublicacaoModel {
     @Transactional
     public void salvarPublicacao(Usuario usuario, String texto, MultipartFile imagem) {
         String urlImagem = imagemModel.upload(imagem);
-        Usuario usuarioBanco = usuarioService.buscarPorCodigo(usuario.getCodigo());
+        Optional<Usuario> usuarioBanco = usuarioService.buscarPorCodigo(usuario.getCodigo());
 
-        if (usuarioBanco != null) {
+        if (usuarioBanco.isPresent()) {
             LocalDateTime dataPublicacao = LocalDateTime.now();
-            Publicacao publicacao = new Publicacao(usuarioBanco, urlImagem, texto, dataPublicacao, true);
+            Publicacao publicacao = new Publicacao(usuarioBanco.get(), urlImagem, texto, dataPublicacao, true);
             Likes like = new Likes(publicacao);
 
             likeModel.salvar(like);
