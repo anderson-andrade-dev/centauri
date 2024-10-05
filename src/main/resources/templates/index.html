@@ -7,7 +7,9 @@
     <link rel="shortcut icon" href="img/Logo-Exp7orer.png" type="image/x-icon">
     <title>JavD</title>
 
-    <link rel="stylesheet" th:href="@{css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/fontawesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
     <link rel="stylesheet" th:href="@{css/section-um.css}">
     <link rel="stylesheet" th:href="@{css/section-dois.css}">
 
@@ -29,45 +31,26 @@
             min-height: 100vh;
         }
 
-        nav.navbar {
-            width: 100dvw;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 4px 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        nav.navbar .logo img {
-            width: 7%;
-            height: 7%;
-        }
-
         .section-um {
             background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(2rem);
         }
 
         .section-um .caixa-fundo {
-            padding: 50px;
+            padding: 7rem;
             border-radius: 15px;
             background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2rem);
+            box-shadow: 0 8px 36px rgba(0, 0, 0, 0.2);
             color: #fff;
+            text-align: center;
         }
 
         .gallery .card {
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(8px);
             border-radius: 20px;
-            padding: 20px;
+            padding: 10px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
@@ -97,31 +80,13 @@
         .card:hover .card-inner {
             transform: rotateY(180deg);
         }
-
-        footer {
-            padding: 20px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            color: #333;
-        }
     </style>
 
 </head>
 
 <body>
 
-<nav class="navbar">
-    <a href="" class="logo">
-        <img th:src="@{images/centauri.png}" alt="Explorer">
-    </a>
-
-    <button class="hamburger"></button>
-
-    <ul class="nav-list">
-        <li><a class="links" th:href="login">Login</a></li>
-        <li><a class="links" th:href="cadastro">Cadastrar</a></li>
-    </ul>
+<nav th:replace="~{layout::nav-index}">
 </nav>
 
 <main>
@@ -159,6 +124,7 @@
         </div>
     </section>
 </main>
+<footer th:replace="~{layout::footer}"></footer>
 
 <!-- Scripts -->
 <script defer th:src="@{/js/popper-1.14.3.min.js}"></script>

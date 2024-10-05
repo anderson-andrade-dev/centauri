@@ -7,6 +7,7 @@
     <title>Usuário|JavD</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/fontawesome/css/all.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
     <style>
         body {
             margin: 0;
@@ -82,33 +83,7 @@
 
 <body>
 <header>
-    <nav class="navbar navbar-light">
-        <a class="navbar-brand" th:href="@{/}">
-            <img th:src="@{/images/centauri.png}" width="70" height="70" class="d-inline-block align-top" alt="">
-        </a>
-        <form class="form-inline">
-        </form>
-        <form class="form-inline">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-cadastro" hidden>
-                Cadastrar
-            </button>
-        </form>
-        <form class="form-inline">
-            <p th:text="${usuario.nome}"></p>
-        </form>
-        <form class="form-inline">
-            <button type="button" class="btn" data-toggle="modal" data-target="#modal-usuario">
-                <i class="fa-regular fa-user fa-2x" aria-hidden="true"></i>
-            </button>
-        </form>
-        <form class="form-inline">
-            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-mensagem">
-                Mensagens <span class="badge badge-light"
-                                th:if='${not caixaDeMensagem.mensagens.get(0).texto.contains("Você não tem mensagens!")}'
-                                th:text="${caixaDeMensagem.mensagens.size()}"></span>
-            </button>
-        </form>
-    </nav>
+    <div th:insert="~{layout::nav}"></div>
 </header>
 <main>
     <hr>
@@ -245,116 +220,14 @@
     </div>
     <hr>
 </main>
-<footer class="bg-body-tertiary text-center">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0);">
-        <p class="text-right" id="dataRodape"></p>
-        © 2024 Copyright:
-        <a class="text-body" href="/">Exp7orer</a>
-    </div>
-</footer>
+<div th:replace="~{layout::footer}"></div>
 
-<!--Modal das edição do usuário  -->
-
-<div class="modal fade" id="modal-usuario" tabindex="-1" role="dialog" aria-labelledby="modal-usuario"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuário</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form th:action="@{/cadastro/alteraUsuario}" th:method="post" id="form-altera-usuario"
-                      name="form-altera-usuario" autocomplete="off">
-                    <div class="form-group">
-
-                        <input type="hidden" id="codigo" name="codigo" th:value="${usuario.codigo}"/>
-                        <input type="hidden" id="email" name="email" th:value="${usuario.login.email}">
-
-                        <label for="nome">Nome</label>
-                        <input type="text" class="form-control" id="nome" name="nome"
-                               placeholder="Nome" th:value="${usuario.nome}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="sobreNome">Sobrenome</label>
-                        <input type="text" class="form-control" id="sobreNome" name="sobreNome"
-                               placeholder="Sobrenome" th:value="${usuario.sobreNome}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-check-label" for="nomeUsuario">Nome de Usuário</label>
-                        <input type="text" class="form-control" id="nomeUsuario" name="nomeUsuario"
-                               placeholder="Novo nome do usuário" th:value="${usuario.login.nomeUsuario}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="senha">Nova Senha</label>
-                        <input type="password" class="form-control" id="senha" name="senha"
-                               placeholder="Alterar Senha" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Alterar</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Modal das mensagens  -->
-
-<div class="modal fade" id="modal-mensagem" tabindex="-1" role="dialog" aria-labelledby="modal-mensagem"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Mensagens do Usuário</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive" style="height:20rem;overflow:auto;">
-                            <table class="table table-borderless table-striped">
-                                <thead>
-                                <tr>
-                                    <th scope="col"></th>
-                                    <th scope="col" style="text-align:right;">Marcar como Lida</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="msn:${caixaDeMensagem.mensagens}">
-                                    <td>
-                                        <p th:text="${msn.texto}"></p>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <div class="form-check">
-                                            <input class="form-check-input position-static" type="checkbox"
-                                                   id="" value="opcao1" aria-label="...">
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script th:src="@{/js/popper-1.14.3.min.js}"></script>
 <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 <script th:src="@{/fontawesome/js/all.js}"></script>
 <script th:src="@{/js/bootstrap.js}"></script>
 <script th:src="@{/js/centauri.js}" th:type="module"></script>
-<script>
-</script>
+
 </body>
+</html>

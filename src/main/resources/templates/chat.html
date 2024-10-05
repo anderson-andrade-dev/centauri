@@ -17,7 +17,11 @@
 <div class="main-container">
     <!-- Barra lateral com lista de remetentes -->
     <div class="sidebar">
-        <h2>Contatos</h2>
+        <form class="form-inline" th:action="@{/cadastro/destinatario}" th:method="get">
+                <button class="btn btn-acrilico" type="submit" th:alt-title="'Adicionar Destinatario'"
+                        id="bt-cad-destinatario" name="bt-cad-destinatario">
+                    <i class="fa-solid fa-person-chalkboard fa-2x"></i></button>
+        </form>
         <p th:if="${#lists.isEmpty(destinatarios)}">Você não tem contatos cadastrados!</p>
         <div th:each="destinatario : ${destinatarios}">
             <div class="contact" th:data-nome="${destinatario .nome}" th:data-endereco="${destinatario.endereco}"
@@ -45,9 +49,10 @@
         </div>
     </div>
 </div>
-
+<footer th:replace="~{layout::footer}"></footer>
 <!-- Scripts -->
 <script src="/js/chat.js"></script>
+<script src="/js/centauri.js"></script>
 <script>
     function toggleMenu() {
         const navList = document.querySelector('.nav-list');

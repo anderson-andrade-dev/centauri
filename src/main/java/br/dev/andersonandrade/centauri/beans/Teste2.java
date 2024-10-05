@@ -1,11 +1,11 @@
-package br.com.exp7orer.centauri.beans;
+package br.dev.andersonandrade.centauri.beans;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * @author Anderson Andrade Dev
- * @Data de Criação 28/09/2024
+ * @date 28/09/2024
  */
 public class Teste2 implements Serializable {
 

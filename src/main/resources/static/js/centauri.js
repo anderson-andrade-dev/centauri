@@ -69,4 +69,84 @@ function alterarTamanhoImagem(file, callback) {
     reader.readAsDataURL(file);
 }
 
+$(document).ready(function() {
+    // Função para buscar destinatários quando a tecla Enter for pressionada
+    $("#email").on("keypress", function(e) {
+        // Verifica se a tecla pressionada foi Enter (código 13)
+        if (e.which == 13) {
+            e.preventDefault(); // Impede o comportamento padrão do Enter
 
+            var email = $(this).val(); // Pega o valor digitado
+
+            $.ajax({
+                url: "/cadastro/destinatario/busca", // URL corrigida
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8", // Certifique-se de enviar os dados corretamente
+                data: {
+                    email: email // Envia o e-mail como parâmetro
+                },
+                success: function(destinatarios) {
+                    // Limpa a lista de destinatários anterior
+                    $("#destinatarios-list").empty();
+
+                    // Oculta o botão "Enviar Convite" inicialmente
+                    $("#send-invite-btn").hide();
+
+                    // Verifica se nenhum destinatário foi encontrado
+                    if (destinatarios.length === 0) {
+                        // Exibe a mensagem de destinatário não encontrado e o botão de convite
+                        $("#destinatarios-list").append(
+                            '<li>Nenhum destinatário encontrado com este e-mail.</li>'
+                        );
+                        //Esconde Botão Cadastro destinatario
+                        $("#cad-destinatario-btn").hide();
+                        // Mostra o botão de convite
+                        $("#send-invite-btn").show();
+
+                        // Ação para o botão de envio de convite
+                        $("#send-invite-btn").off("click").on("click", function() {
+                            enviarConvite(email); // Função para enviar convite
+                        });
+                    } else {
+                        // Itera sobre os destinatários retornados e os adiciona na lista
+                        $.each(destinatarios, function(index, destinatario) {
+                            $("#destinatarios-list").append(
+                                '<li>' +
+                                '<input type="checkbox" value="' + destinatario.endereco + '" name="destinatariosSelecionados">' +
+                                '   '+destinatario.nome + ' \n' + destinatario.endereco +
+                                '</li>'
+                            );
+                        });
+                        // desativa botão de cadastro
+                        $("#cad-destinatario-btn").show();
+                        // Se há destinatários, o botão de convite permanece oculto
+                        $("#send-invite-btn").hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erro ao buscar destinatários. Tente novamente.");
+                    console.error("Status: " + status + ", Erro: " + error);
+                }
+            });
+        }
+    });
+
+    // Função para enviar convite
+    function enviarConvite(email) {
+        $.ajax({
+            url: "/cadastro/destinatario/enviarConvite", // Endpoint para envio do convite
+            type: "POST",
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            data: {
+                email: email // Envia o e-mail como parâmetro
+            },
+            success: function(response) {
+                alert("Convite enviado com sucesso para " + email);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erro ao enviar o convite. Tente novamente.");
+                console.error("Status: " + status + ", Erro: " + error);
+            }
+        });
+    }
+});

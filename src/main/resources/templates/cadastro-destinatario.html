@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Destinatário</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        /* Estilo global do corpo */
+        body {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            background: url("/images/centauri.jpg") no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Garantindo que a navbar fique no topo */
+        header {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Centralizando apenas o container */
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            margin: auto; /* Centralizando verticalmente */
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        input[type="text"]::placeholder {
+            color: #ccc;
+        }
+
+        ul#destinatarios-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            background-color: #7b61ff;
+            border: none;
+            padding: 10px 15px;
+            color: white;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #b794ff;
+        }
+
+        button[style="display: none;"] {
+            display: none !important;
+        }
+
+        /* Garantindo que o footer fique no rodapé */
+        footer {
+            width: 100%;
+            margin-top: auto; /* Mantém o footer sempre no final da página */
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header th:insert="~{layout::nav}"></header>
+
+<!-- Container principal centralizado -->
+<div class="container">
+    <h2>Adicionar Destinatário</h2>
+    <form>
+        <div class="form-group">
+            <input type="email" required="required" class="form-control" id="email" placeholder="Digite o e-mail para buscar">
+        </div>
+
+        <ul id="destinatarios-list">
+            <!-- A lista de destinatários será preenchida dinamicamente aqui -->
+        </ul>
+
+        <div class="button-group">
+            <button id="cad-destinatario-btn" class="btn-acrilico" style="display: none;">Adicionar como Remetente</button>
+            <button id="send-invite-btn" class="btn-acrilico" style="display: none;">Enviar Convite</button>
+        </div>
+    </form>
+</div>
+
+
+<footer th:replace="~{layout::footer}"></footer>
+
+<script th:src="@{/js/popper-1.14.3.min.js}"></script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script th:src="@{/fontawesome/js/all.js}"></script>
+<script th:src="@{/js/bootstrap.js}"></script>
+<script th:src="@{/js/centauri.js}" th:type="module"></script>
+
+</body>
+</html>

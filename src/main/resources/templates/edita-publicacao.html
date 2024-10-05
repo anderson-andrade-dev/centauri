@@ -23,26 +23,6 @@
             z-index: 1000;
         }
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .navbar .form-inline .btn {
-            background: rgba(0, 191, 255, 0.9);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            transition: background 0.3s, transform 0.3s;
-        }
-
-        .navbar .form-inline .btn:hover {
-            background: rgba(0, 191, 255, 1);
-            transform: translateY(-2px);
-        }
-
         .container {
             margin-top: 20px;
         }
@@ -74,10 +54,6 @@
             transform: translateY(-2px);
         }
 
-        .modal-content {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-        }
     </style>
 </head>
 
@@ -111,7 +87,7 @@
                             </form>
                             <br>
                             <hr>
-                            <form th:action="@{minha-pagina}" method="get">
+                            <form th:action="@{/minha-pagina}" method="post">
                                 <input hidden="hidden" th:value="${usuario.codigo}" name="codigo">
                                 <button class="btn btn-outline-success btn-block" type="submit">Voltar</button>
                             </form>
@@ -183,101 +159,7 @@
     </div>
     <hr>
 </main>
-<footer class="bg-body-tertiary text-center">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0);">
-        <p class="text-right" id="dataRodape"></p>
-        © 2024 Copyright:
-        <a class="text-body" href="/">JavaD</a>
-    </div>
-</footer>
-
-
-<!-- Modal do usuário -->
-<div class="modal fade" id="modal-usuario" tabindex="-1" role="dialog" aria-labelledby="modal-usuario"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuário</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form th:action="@{/alteraUsuario}" th:method="post" id="form-altera-usuario"
-                      name="form-altera-usuario" autocomplete="off">
-                    <div class="form-group">
-                        <label for="nome">Nome</label>
-                        <input type="text" class="form-control" id="nome" placeholder="Nome">
-                    </div>
-                    <div class="form-group">
-                        <label for="sobreNome">Sobrenome</label>
-                        <input type="text" class="form-control" id="sobreNome" name="sobreNome" placeholder="Sobrenome">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-check-label" for="nomeUsuario">Nome de Usuário</label>
-                        <input type="text" class="form-control" id="nomeUsuario" placeholder="Novo nome do usuário">
-                    </div>
-                    <div class="form-group">
-                        <label for="senha">Nova Senha</label>
-                        <input type="password" class="form-control" id="senha" placeholder="Alterar Senha">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Alterar</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal das mensagens -->
-<div class="modal fade" id="modal-mensagem" tabindex="-1" role="dialog" aria-labelledby="modal-mensagem"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Mensagens do Usuário</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive" style="height:20rem;overflow:auto;">
-                            <table class="table table-borderless table-striped">
-                                <thead>
-                                <tr>
-                                    <th scope="col"></th>
-                                    <th scope="col" style="text-align:right;">Marcar como Lida</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="msn:${caixaDeMensagem.mensagens}">
-                                    <td>
-                                        <p th:text="${msn.texto}"></p>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <div class="form-check">
-                                            <input class="form-check-input position-static" type="checkbox" id=""
-                                                   value="opcao1" aria-label="...">
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
-            </div>
-        </div>
-    </div>
-</div>
+<footer th:replace="~{layout::footer}"></footer>
 
 <script th:src="@{/js/popper-1.14.3.min.js}"></script>
 <script th:src="@{/js/jquery-3.7.1.min.js}"></script>

@@ -1,29 +1,35 @@
 package br.dev.andersonandrade.centauri.controller;
 
 import br.dev.andersonandrade.centauri.entity.Usuario;
+import br.dev.andersonandrade.centauri.interfaces.Destinatario;
 import br.dev.andersonandrade.centauri.model.MensagemModel;
 import br.dev.andersonandrade.centauri.model.PublicacaoModel;
 import br.dev.andersonandrade.centauri.model.UsuarioService;
+import br.dev.andersonandrade.centauri.record.DestinatarioRecord;
 import br.dev.andersonandrade.centauri.record.UsuarioRecord;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+import java.util.Objects;
+
 @Controller
 @RequestMapping(path = "cadastro")
 public class CadastroController {
-    private final UsuarioService usuarioModel;
     private final MensagemModel mensagemModel;
     private final PublicacaoModel publicacaoModel;
     private final UsuarioService usuarioService;
 
 
     @Autowired
-    public CadastroController(UsuarioService usuarioModel, MensagemModel mensagemModel, PublicacaoModel publicacaoModel, UsuarioService usuarioService) {
-        this.usuarioModel = usuarioModel;
+    public CadastroController(MensagemModel mensagemModel,
+                              PublicacaoModel publicacaoModel, UsuarioService usuarioService) {
         this.mensagemModel = mensagemModel;
         this.publicacaoModel = publicacaoModel;
         this.usuarioService = usuarioService;
@@ -58,7 +64,7 @@ public class CadastroController {
             RedirectAttributes attributes) {
 
         UsuarioRecord record = new UsuarioRecord(nome, sobreNome, nomeUsuario, senha, email);
-        Usuario atualizarUsuario = usuarioModel.editarUsuario(codigoUsuario, record);
+        Usuario atualizarUsuario = usuarioService.editarUsuario(codigoUsuario, record);
 
         if (atualizarUsuario != null) {
             return "redirect:/";
@@ -71,7 +77,7 @@ public class CadastroController {
     @GetMapping("ativar")
     public String ativarUsuario(@RequestParam("codigo") String codigo, RedirectAttributes attributes) {
         try {
-            usuarioModel.ativarUsuario(codigo);
+            usuarioService.ativarUsuario(codigo);
             attributes.addAttribute("codigo", codigo);
             return "redirect:/minha-pagina";
         } catch (IllegalArgumentException e) {
@@ -84,9 +90,30 @@ public class CadastroController {
     @ResponseBody
     public int verificarNomeUsuario(@RequestParam("nomeUsuario") String nomeUsuario) {
         System.out.println("Verificando nome de usuário: " + nomeUsuario);
-        boolean existe = usuarioModel.usuarioExiste(nomeUsuario);
+        boolean existe = usuarioService.usuarioExiste(nomeUsuario);
         System.out.println("Nome de usuário existe: " + existe);
         return existe ? 1 : 0;
     }
 
+    @PostMapping("destinatario/busca")
+    @ResponseBody
+    public List<DestinatarioRecord> buscaDestinatario(@RequestParam("email")String email) {
+        Objects.requireNonNull(email,"Verifique o parametro ele não pode ser nulo!");
+        if(email.isEmpty() || email.isBlank()){
+            throw new IllegalArgumentException("A String do parametro não pode ser vazia ou estar em branco!");
+        }
+        Usuario usuario = usuarioService.buscaPorEmail(email);
+        if (Objects.isNull(usuario)) {
+            return List.of();
+        }
+        DestinatarioRecord destinatario = new DestinatarioRecord(usuario.getNome(), usuario.getLogin().getEmail());
+        return List.of(destinatario);
+    }
+
+    @GetMapping("destinatario")
+    public String formCadastroRemetente(Authentication authentication,DestinatarioRecord destinatarioRecord,Model model){
+
+        return "cadastro-destinatario";
+
+    }
 }

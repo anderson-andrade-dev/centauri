@@ -44,12 +44,11 @@ import java.util.Set;
  */
 public class SalaChat implements SalaChatInterface {
 
-    // Conjunto estático de todas as salas de chat criadas (deve ser thread-safe)
     private static final Set<SalaChat> salas = Collections.synchronizedSet(new HashSet<>());
-    private final Remetente remetente; // Remetente da sala de chat
-    private final Destinatario destinatario; // Destinatário da sala de chat
-    private final Set<Mensagem> mensagensDestinatario; // Mensagens enviadas ao destinatário
-    private final Set<Mensagem> mensagensRemetente; // Mensagens enviadas pelo remetente
+    private final Remetente remetente;
+    private final Destinatario destinatario;
+    private final Set<Mensagem> mensagensDestinatario;
+    private final Set<Mensagem> mensagensRemetente;
 
     /**
      * Construtor privado que inicializa uma nova sala de chat entre um remetente e um destinatário.

@@ -4,28 +4,39 @@
     <meta charset="UTF-8">
 </head>
 <body>
-<div th:fragment="nav">
-    <nav class="navbar">
+<div class="navbar" th:fragment="nav-index">
+    <div class="navbar-brand">
+        <img th:src="@{/images/centauri.png}" height="70">
+    </div>
+    <form class="form-inline" th:action="@{/login}" th:method="post">
+        <button class="btn-acrilico" type="submit" th:alt-title="Login"><i class="fa-solid fa-right-to-bracket fa-2x"></i></button>
+    </form>
+</div>
+    <nav class="navbar" th:fragment="nav">
         <div class="navbar-brand">
             <img th:src="@{/images/centauri.png}" height="70">
         </div>
         <form class="form-inline" th:action="@{/}" th:method="get">
-            <button class="btn-acrilico" type="submit"><i class="fas fa-home fa-2x"></i></button>
+            <button class="btn-acrilico" type="submit" th:alt-title="Home"><i class="fas fa-home fa-2x"></i></button>
         </form>
         <form class="form-inline" th:action="@{/publicacao}" th:method="post">
-            <button class="btn-acrilico" type="submit"><i class="fa-regular fa-pen-to-square fa-2x"></i></button>
+            <button class="btn-acrilico" type="submit" th:alt-title="Publicações"><i class="fa-regular fa-pen-to-square fa-2x"></i></button>
         </form>
         <form class="form-inline" th:action="@{/chat/principal}" th:method="get">
-            <button class="btn-acrilico" type="submit"><i class="fa-regular fa-message fa-2x"></i></button>
+            <button class="btn-acrilico" type="submit" th:alt-title="Mensagens"><i class="fa-regular fa-message fa-2x"></i></button>
         </form>
         <form class="form-inline" th:action="@{/chat/principal}" th:method="get">
-            <button class="btn-acrilico"><i class="fa-regular fa-user fa-2x" aria-hidden="true"></i></button>
+            <button class="btn-acrilico" th:alt-title="Usuário"><i class="fa-regular fa-user fa-2x" aria-hidden="true"></i></button>
         </form>
     </nav>
-</div>
-<div th:fragment="footer">
 
-</div>
+<footer th:fragment="footer" class="bg-body-tertiary text-center">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0);">
+        <p class="text-right" id="dataRodape"></p>
+        © 2024 Copyright:
+        <a class="text-body" href="/">JavaD</a>
+    </div>
+</footer>
 <script defer th:src="@{/js/popper-1.14.3.min.js}"></script>
 <script defer th:src="@{/js/jquery-3.7.1.min.js}"></script>
 <script defer th:src="@{/fontawesome/js/all.js}"></script>
