@@ -6,6 +6,7 @@ import br.dev.andersonandrade.centauri.entity.Likes;
 import br.dev.andersonandrade.centauri.entity.Publicacao;
 import br.dev.andersonandrade.centauri.entity.Usuario;
 import br.dev.andersonandrade.centauri.repository.PublicacaoRepository;
+import br.dev.andersonandrade.centauri.service.UsuarioService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -10,6 +10,8 @@ import br.dev.andersonandrade.centauri.interfaces.Remetente;
 import br.dev.andersonandrade.centauri.record.ChatMensagemRecord;
 import br.dev.andersonandrade.centauri.record.RemetenteRecord;
 import br.dev.andersonandrade.centauri.service.CorreioMensagem;
+import br.dev.andersonandrade.centauri.service.RemetenteDestinatarioService;
+import br.dev.andersonandrade.centauri.service.UsuarioService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -31,6 +33,7 @@ import java.util.*;
 public class ChatModel {
     private final CorreioMensagem correio;
     private final UsuarioService usuarioService;
+    private final RemetenteDestinatarioService remetenteDestinatarioService;
 
     /**
      * Construtor que inicializa a classe ChatModel.
@@ -38,9 +41,10 @@ public class ChatModel {
      * @param correio        O serviço responsável pelo envio e recebimento de mensagens.
      * @param usuarioService O modelo de usuário utilizado para gerenciar os usuários do sistema.
      */
-    public ChatModel(CorreioMensagem correio, UsuarioService usuarioService) {
+    public ChatModel(CorreioMensagem correio, UsuarioService usuarioService, RemetenteDestinatarioService remetenteDestinatarioService) {
         this.correio = correio;
         this.usuarioService = usuarioService;
+        this.remetenteDestinatarioService = remetenteDestinatarioService;
     }
 
     /**
@@ -156,7 +160,7 @@ public class ChatModel {
                 "Verifique o Destinatario não pode ser nulo!");
         validaEndereco(remetente.endereco(), "remetente");
         validaEndereco(destinatario.endereco(), "destinatario");
-        usuarioService.associarRemetenteDestinatario(remetente, destinatario);
+        remetenteDestinatarioService.associar(remetente, destinatario);
     }
 
     /**

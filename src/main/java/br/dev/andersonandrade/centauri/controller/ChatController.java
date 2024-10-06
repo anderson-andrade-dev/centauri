@@ -2,11 +2,13 @@ package br.dev.andersonandrade.centauri.controller;
 
 
 import br.dev.andersonandrade.centauri.beans.MensagemBean;
+import br.dev.andersonandrade.centauri.interfaces.Destinatario;
+import br.dev.andersonandrade.centauri.interfaces.Remetente;
 import br.dev.andersonandrade.centauri.model.ChatModel;
 import br.dev.andersonandrade.centauri.record.ChatMensagemRecord;
 import br.dev.andersonandrade.centauri.record.DestinatarioRecord;
 import br.dev.andersonandrade.centauri.record.MensagemRecord;
-import br.dev.andersonandrade.centauri.record.RemetenteRecord;
+import br.dev.andersonandrade.centauri.service.RemetenteDestinatarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -26,20 +27,17 @@ import java.util.List;
 public class ChatController {
 
     private final ChatModel chatModel;
+    private final RemetenteDestinatarioService service;
 
-    public ChatController(ChatModel chatModel) {
+    public ChatController(ChatModel chatModel, RemetenteDestinatarioService service) {
         this.chatModel = chatModel;
+        this.service = service;
     }
 
     @GetMapping("/principal")
-    public String chat(Model model) {
-        List<DestinatarioRecord> destinatarios = new ArrayList<>();
-        RemetenteRecord remetente = new RemetenteRecord("Anderson", "teste@teste");
-        destinatarios.add(new DestinatarioRecord("Anderson", "endereco_do_destinatario@example.com"));
-        destinatarios.add(new DestinatarioRecord("Giovana", "teste@teste2"));
-        destinatarios.add(new DestinatarioRecord("Aurora", "teste@teste3"));
-        destinatarios.add(new DestinatarioRecord("natalie", "teste@teste4"));
-        destinatarios.add(new DestinatarioRecord("natalie2", "teste@teste40"));
+    public String chat(Model model,Authentication authentication) {
+        Remetente remetente = service.buscaRemetentePorEndereco(authentication.getName());
+        List<Destinatario> destinatarios = service.buscarDestinatariosPorRemetente(remetente);
         model.addAttribute("remetente", remetente);
         model.addAttribute("destinatarios", destinatarios);
         return "chat";

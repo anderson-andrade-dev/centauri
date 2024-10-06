@@ -4,7 +4,7 @@ import br.dev.andersonandrade.centauri.beans.LikePublicacao;
 import br.dev.andersonandrade.centauri.entity.Usuario;
 import br.dev.andersonandrade.centauri.model.MensagemModel;
 import br.dev.andersonandrade.centauri.model.PublicacaoModel;
-import br.dev.andersonandrade.centauri.model.UsuarioService;
+import br.dev.andersonandrade.centauri.service.UsuarioService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

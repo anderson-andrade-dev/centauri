@@ -4,6 +4,7 @@ import br.dev.andersonandrade.centauri.beans.CaixaMensagem;
 import br.dev.andersonandrade.centauri.entity.MensagemUsuario;
 import br.dev.andersonandrade.centauri.entity.Usuario;
 import br.dev.andersonandrade.centauri.interfaces.Mensagem;
+import br.dev.andersonandrade.centauri.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
