@@ -34,7 +34,7 @@ import java.util.Objects;
 public class EmailService {
 
     private static final String NOME_TEMPLATE = "email"; // Nome do template de email
-    private static final String IMAGEM_LOGO = "static/images/logo.jpg"; // Caminho da imagem do logo
+    private static final String IMAGEM_LOGO = "static/images/centauri.jpg"; // Caminho da imagem do logo
     private static final String PNG_MIME = "image/png"; // Tipo MIME para imagem PNG
     private static final String MAIL_SUBJECT = "Seja bem vindo(a)"; // Assunto do email
 

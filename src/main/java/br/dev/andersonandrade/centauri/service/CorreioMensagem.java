@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @ApplicationScope
 public class CorreioMensagem implements Mensageiro {
 
-    @Qualifier("amarzemMensagens")
+    @Qualifier("armazemMensagens")
     private final Armazem armazem;
 
     private final Queue<Transportador> transportadoresUrgente;
@@ -164,6 +164,25 @@ public class CorreioMensagem implements Mensageiro {
     public List<Mensagem> mensagens(Remetente remetente) {
         // Recupera mensagens de remetentes e destinatários
         var mensagens = armazem.mensagens(remetente);
+        return mensagens.isEmpty() ? List.of() : mensagens;
+    }
+
+    /**
+     * Recupera todas as mensagens associadas a um remetente e um destinatario específico.
+     * <p>
+     * Este método busca nas mensagens armazenadas para encontrar aquelas que
+     * têm o endereço do remetente especificado.
+     *
+     * @param remetente O remetente cujas mensagens devem ser recuperadas.
+     * @param destinatario remetente cujas mensagens devem ser recuperadas.
+     * @return Uma lista de mensagens associadas ao remetente e destinatario, ou uma lista vazia se não houver mensagens.
+     */
+    public List<Mensagem> mensagens(Remetente remetente,Destinatario destinatario){
+        validarRemetente(remetente);
+        validarDestinatario(destinatario);
+
+        var mensagens = armazem.mensagens(remetente,destinatario);
+
         return mensagens.isEmpty() ? List.of() : mensagens;
     }
 

@@ -7,57 +7,143 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/fontawesome/css/all.css}">
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
-    <link rel="stylesheet" th:href="@{/css/chat.css}"> <!-- Corrigido o nome do arquivo CSS -->
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
 
-<!-- Navbar -->
+
 <div th:insert="~{layout::nav}"></div>
 
 <div class="main-container">
-    <!-- Barra lateral com lista de remetentes -->
+
     <div class="sidebar">
-        <form class="form-inline" th:action="@{/cadastro/destinatario}" th:method="get">
+        <form class="form-inline" th:action="@{/chat/destinatario}" th:method="get">
                 <button class="btn btn-acrilico" type="submit" th:alt-title="'Adicionar Destinatario'"
                         id="bt-cad-destinatario" name="bt-cad-destinatario">
                     <i class="fa-solid fa-person-chalkboard fa-2x"></i></button>
         </form>
         <p th:if="${#lists.isEmpty(destinatarios)}">Você não tem contatos cadastrados!</p>
         <div th:each="destinatario : ${destinatarios}">
-            <div class="contact" th:data-nome="${destinatario .nome}" th:data-endereco="${destinatario.endereco}"
-                 onclick="selectContact(this.dataset.nome,this.dataset.endereco)">
-                <img src="https://via.placeholder.com/30" th:alt="${destinatario .nome}">
-                <span th:text="${destinatario .nome}"></span>
-            </div>
+
+            <form th:action="@{/chat/mensagens}" th:method="post">
+                <div class="contact">
+                    <button type="submit" class="btn-block btn-dark">
+                        <input type="hidden" th:value="${destinatario.nome}" th:name="nome">
+                        <input type="hidden" th:value="${destinatario.endereco}" th:name="endereco">
+                        <h5 th:text="${destinatario.nome}"></h5>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Área de chat principal -->
     <div class="chat-area">
         <div class="chat-header" id="chat-header">
             <img src="https://via.placeholder.com/40" alt="Contato">
-            <span id="contact-name">Escolha um contato</span>
+            <span id="contact-name"
+                  th:text="${destinatarioAtual == null} ? '': ${destinatarioAtual.nome}"></span>
         </div>
 
         <div class="chat-messages" id="chat-messages">
-
+            <div th:each="chat:${mensagensChat}"
+                 th:class="${chat.remetente}? 'message-bubble-receiver' : 'message-bubble-sender'">
+                <div class="message-content" th:text="${chat.mensagem.conteudo}"></div>
+                <div class="message-time"
+                     th:text="${#temporals.format(chat.mensagem.dataEnvio,'dd-MM-yyyy:hh:mm:ss')}"></div>
+            </div>
         </div>
 
         <div class="message-input-container">
-            <input type="text" id="message-input" class="message-input" placeholder="Digite sua mensagem..." disabled>
-            <button class="message-send-btn" onclick="sendMessage()" disabled>Enviar</button>
+            <input type="text" id="message-input" class="message-input" placeholder="Digite sua mensagem...">
+            <button class="message-send-btn" id="bt-enviar">Enviar</button>
         </div>
+
     </div>
+
 </div>
+
 <footer th:replace="~{layout::footer}"></footer>
-<!-- Scripts -->
-<script src="/js/chat.js"></script>
-<script src="/js/centauri.js"></script>
-<script>
-    function toggleMenu() {
-        const navList = document.querySelector('.nav-list');
-        navList.classList.toggle('active');
+
+
+<script th:inline="javascript">
+    const btEnviar = document.getElementById("bt-enviar");
+    const mensagemAlert = document.getElementById("contact-name");
+    const inputMensagem = document.getElementById("message-input");
+    const destinatarioAtual = /*[[${destinatarioAtual}]]*/ null;
+
+
+    btEnviar.addEventListener("click", () => {
+        if (destinatarioAtual != null) {
+            btEnviar.disabled = false;
+            enviaMensagem();
+
+        } else {
+            btEnviar.disabled = true;
+            mensagemAlert.innerHTML = "Por favor escolha um Destinatario!";
+        }
+    });
+
+    inputMensagem.addEventListener("keydown",(event) => {
+        if(event.key ==="Enter"){
+            if (destinatarioAtual != null) {
+                btEnviar.disabled = false;
+                enviaMensagem();
+
+            } else {
+                btEnviar.disabled = true;
+                mensagemAlert.innerHTML = "Por favor escolha um Destinatario!";
+            }
+        }
+    });
+
+    function enviaMensagem() {
+        const messageInput = document.getElementById("message-input");
+        const messageText = messageInput.value.trim(); // Remove espaços em branco
+
+        if (messageText) { // Verifica se a mensagem não está vazia
+            const payload = {
+                destinatario: {
+                    nome: destinatarioAtual.nome,
+                    endereco: destinatarioAtual.endereco,
+                },
+                mensagem: messageText // Texto da mensagem a ser enviado
+            };
+
+            // Envia a mensagem para o servidor
+            fetch('/chat/enviar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao enviar a mensagem');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Mensagem enviada com sucesso:', data);
+                    messageInput.value = ""; // Limpa o campo de mensagem após o envio
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar a mensagem:', error);
+                });
+
+            // Exibe a mensagem na interface
+            const chatMessages = document.getElementById("chat-messages");
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message-bubble-sender");
+            messageElement.textContent = messageText;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } else {
+            alert("A mensagem não pode estar vazia!");
+        }
     }
+
 </script>
+<script src="/js/centauri.js"></script>
 </body>
 </html>

@@ -21,6 +21,7 @@ public class MensagemUsuario implements Mensagem, Serializable {
     private LocalDateTime data;
     private boolean lida;
 
+
     @Deprecated
     protected MensagemUsuario() {
         //Obrigatorio JPA

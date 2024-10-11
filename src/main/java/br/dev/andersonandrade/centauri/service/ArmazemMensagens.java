@@ -46,7 +46,7 @@ public class ArmazemMensagens implements Armazem {
      * @param transportadorRepository O repositório para gerenciar a persistência das mensagens.
      */
     @Autowired
-    public ArmazemMensagens(TransportadorRepository transportadorRepository) {
+    public ArmazemMensagens(@NotNull TransportadorRepository transportadorRepository) {
         this.transportadorRepository = transportadorRepository;
         atualizarMensagens();
         this.logger = LoggerFactory.getLogger(ArmazemMensagens.class);
@@ -109,9 +109,7 @@ public class ArmazemMensagens implements Armazem {
     @Override
     public List<Mensagem> mensagens(Remetente remetente) {
 
-        if (transportadores == null || transportadores.isEmpty()) {
             atualizarMensagens();
-        }
 
         List<Mensagem> mensagensRemetente = new ArrayList<>();
 
@@ -129,13 +127,45 @@ public class ArmazemMensagens implements Armazem {
     }
 
     /**
+     * Recupera todas as mensagens associadas a um remetente e um destinatario específico.
+     * <p>
+     * Este método busca nas mensagens armazenadas para encontrar aquelas que
+     * têm o endereço do remetente especificado.
+     *
+     * @param remetente O remetente cujas mensagens devem ser recuperadas.
+     * @param destinatario remetente cujas mensagens devem ser recuperadas.
+     * @return Uma lista de mensagens associadas ao remetente e destinatario, ou uma lista vazia se não houver mensagens.
+     */
+    public List<Mensagem> mensagens(Remetente remetente,Destinatario destinatario){
+
+            atualizarMensagens();
+
+        List<Mensagem> mensagensRemetente = new ArrayList<>();
+
+        for (TransportadorEntity entity : transportadores) {
+
+            if (entity.getEnderecoRemetente().equals(remetente.endereco()) ||
+                    entity.getEnderecoDestinatario().equals(destinatario.endereco())) {
+
+                mensagensRemetente.add(new MensagemBean(entity.getTitulo(),
+                        entity.getConteudo(), entity.getDataEnvio()));
+
+            }
+
+        }
+
+        return mensagensRemetente.isEmpty() ?
+                Collections.emptyList() : List.copyOf(mensagensRemetente);
+    }
+
+    /**
      * Atualiza o conjunto de transportadores a partir do repositório.
      * <p>
      * Este método recupera todos os transportadores da base de dados e
      * armazena-os no conjunto de transportadores da classe.
      */
     private void atualizarMensagens() {
-        this.transportadores = transportadorRepository.findAll().stream().collect(Collectors.toSet());
+            this.transportadores = transportadorRepository.findAll().stream().collect(Collectors.toSet());
     }
 
     /**

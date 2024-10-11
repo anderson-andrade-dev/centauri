@@ -4,19 +4,15 @@ import br.dev.andersonandrade.centauri.entity.Usuario;
 import br.dev.andersonandrade.centauri.exceptions.UsuarioNaoEncontradoException;
 import br.dev.andersonandrade.centauri.model.MensagemModel;
 import br.dev.andersonandrade.centauri.model.PublicacaoModel;
-import br.dev.andersonandrade.centauri.record.DestinatarioRecord;
 import br.dev.andersonandrade.centauri.record.UsuarioRecord;
 import br.dev.andersonandrade.centauri.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -99,25 +95,4 @@ public class CadastroController {
         return existe ? 1 : 0;
     }
 
-    @PostMapping("destinatario/busca")
-    @ResponseBody
-    public List<DestinatarioRecord> buscaDestinatario(@RequestParam("email")String email) {
-        Objects.requireNonNull(email,"Verifique o parametro ele não pode ser nulo!");
-        if(email.isEmpty() || email.isBlank()){
-            throw new IllegalArgumentException("A String do parametro não pode ser vazia ou estar em branco!");
-        }
-        Optional<Usuario> usuario = usuarioService.buscaPorEmail(email);
-        if (!usuario.isPresent()) {
-            return List.of();
-        }
-        DestinatarioRecord destinatario = new DestinatarioRecord(usuario.get().getNome(), usuario.get().getLogin().getEmail());
-        return List.of(destinatario);
-    }
-
-    @GetMapping("destinatario")
-    public String formCadastroRemetente(Authentication authentication,DestinatarioRecord destinatarioRecord,Model model){
-
-        return "cadastro-destinatario";
-
-    }
 }

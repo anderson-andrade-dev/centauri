@@ -113,7 +113,7 @@
 <!-- Container principal centralizado -->
 <div class="container">
     <h2>Adicionar Destinatário</h2>
-    <form>
+    <form th:action="@{/chat/destinatario/adiciona}" th:method="post" id="destinatario">
         <div class="form-group">
             <input type="email" required="required" class="form-control" id="email" placeholder="Digite o e-mail para buscar">
         </div>
@@ -123,8 +123,9 @@
         </ul>
 
         <div class="button-group">
-            <button id="cad-destinatario-btn" class="btn-acrilico" style="display: none;">Adicionar como Remetente</button>
-            <button id="send-invite-btn" class="btn-acrilico" style="display: none;">Enviar Convite</button>
+            <button id="cad-destinatario-btn" form ="destinatario" type="submit" class="btn-acrilico" style="display: none;">Adicionar como Remetente
+            </button>
+            <button id="send-invite-btn" type="submit" class="btn-acrilico" style="display: none;">Enviar Convite</button>
         </div>
     </form>
 </div>

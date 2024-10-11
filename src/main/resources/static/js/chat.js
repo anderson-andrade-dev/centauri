@@ -1,212 +1,232 @@
-/**
- * Desenvolvedor: Anderson Andrade Dev
- * Email: andersonandradedev@outlook.com
- * Data: 27/09/2024
- *
- * Função principal do sistema de chat para selecionar contatos e enviar mensagens.
- */
+// Armazena o contato atual selecionado e seu endereço
+let currentContact = null;
+let currentAdress = null;
 
-let currentContact = null; // Contato atualmente selecionado
-let currentAdress = null;  // Endereço do contato atualmente selecionado
-const messagesByContact = {}; // Armazena mensagens por contato
-let messageUpdateIntervalId = null; // ID do intervalo para atualização de mensagens
+// Armazena mensagens por contato, agrupadas por endereço de e-mail
+const messagesByContact = {};
 
-// Intervalo para atualização das mensagens (90 segundos)
-const MESSAGE_UPDATE_INTERVAL = 90000; // 90 segundos em milissegundos
-
-// Armazena IDs únicos de todas as mensagens já exibidas para evitar duplicação
+// IDs de mensagens já exibidas para evitar duplicação
 const displayedMessageIds = new Set();
 
+// ID do intervalo de atualização das mensagens
+let messageUpdateIntervalId = null;
+
+// Intervalo de atualização das mensagens (90 segundos)
+const MESSAGE_UPDATE_INTERVAL = 90000;
+
 /**
- * Inicia o intervalo de atualização das mensagens quando um contato é selecionado.
- * O intervalo de 90 segundos permite que o sistema atualize as mensagens sem duplicá-las.
+ * Função para iniciar a atualização periódica de mensagens.
+ * Inicia o intervalo de 90 segundos para atualizar as mensagens do contato selecionado.
  */
 function startMessageUpdate() {
-    // Limpa o intervalo anterior se já existir
+    // Limpa o intervalo anterior, se houver
     if (messageUpdateIntervalId) {
         clearInterval(messageUpdateIntervalId);
     }
 
-    // Inicia um novo intervalo
+    // Inicia o intervalo para atualizar mensagens a cada 90 segundos
     messageUpdateIntervalId = setInterval(() => {
         if (currentContact) {
-            updateMessages(); // Atualiza as mensagens
+            fetchMessagesFromBackend(currentAdress); // Atualiza as mensagens do servidor
         }
     }, MESSAGE_UPDATE_INTERVAL);
 }
 
 /**
- * Função responsável por selecionar um contato e carregar suas mensagens.
- * Atualiza o nome do contato na interface e carrega as mensagens do servidor via requisição AJAX.
+ * Função para selecionar um contato, carregar suas mensagens e atualizar a interface.
+ * Atualiza o nome do contato exibido e habilita os campos de mensagem e botão de envio.
  *
  * @param {string} contactName - Nome do contato selecionado.
  * @param {string} contactAdress - Endereço do contato selecionado.
  */
 function selectContact(contactName, contactAdress) {
-    currentContact = contactName; // Atualiza contato atual
-    currentAdress = contactAdress;  // Atualiza endereço do contato
+    currentContact = contactName; // Atualiza o nome do contato selecionado
+    currentAdress = contactAdress; // Atualiza o endereço do contato
 
-    // Atualiza o nome do contato na interface
+    // Exibe o nome do contato na interface
     document.getElementById('contact-name').textContent = contactName;
-    document.getElementById('message-input').disabled = false; // Habilita campo de mensagem
-    document.querySelector('.message-send-btn').disabled = false; // Habilita botão de envio
 
-    // Inicia o intervalo de atualização de mensagens
+    // Habilita o campo de entrada de mensagem e o botão de envio
+    document.getElementById("message-input").disabled = false;
+    document.querySelector(".message-send-btn").disabled = false;
+
+    // Inicia o processo de atualização periódica de mensagens
     startMessageUpdate();
 
-    updateMessages(); // Carrega as mensagens imediatamente
+    // Busca as mensagens imediatamente ao selecionar o contato
+    fetchMessagesFromBackend(contactAdress);
 }
 
 /**
- * Função responsável por buscar e exibir as mensagens do contato atual.
+ * Função para buscar mensagens do servidor por AJAX.
+ * As mensagens do remetente e destinatário são exibidas na interface.
+ *
+ * @param {string} adress - Endereço do contato do qual buscar as mensagens.
  */
-function updateMessages() {
+function fetchMessagesFromBackend(adress) {
     const destinatario = {
-        nome: currentContact,
-        endereco: currentAdress
+        endereco: adress
     };
 
-    const chatMessages = document.getElementById("chat-messages");
-    chatMessages.innerHTML = ""; // Limpa as mensagens antes de exibir as novas
+    // Faz requisição ao servidor para buscar mensagens
+    fetch('/chat/mensagens', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(destinatario), // Envia destinatário no corpo da requisição
+    })
+        .then(response => response.json()) // Converte a resposta para JSON
+        .then(data => {
+            const mensagensRemetente = data.mensagensRemetente || [];
+            const mensagensDestinatario = data.mensagensDestinatario || [];
 
-    // Verifica se já temos mensagens armazenadas para o contato selecionado
-    if (messagesByContact[currentAdress]) {
-        // Exibe as mensagens do contato atual armazenadas no frontend
-        displayMessages(messagesByContact[currentAdress]);
-    } else {
-        // Se não houver mensagens armazenadas, faz a requisição AJAX para buscar no servidor
-        fetch(`/chat/mensagens`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(destinatario), // Envia destinatário como JSON
+            // Armazena as mensagens para o contato atual
+            messagesByContact[adress] = {
+                mensagensRemetente,
+                mensagensDestinatario
+            };
+
+            // Exibe as mensagens no chat
+            displayMessages(mensagensDestinatario, mensagensRemetente);
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar mensagens'); // Trata erro de resposta
-                }
-                return response.json(); // Retorna o JSON contendo as mensagens
-            })
-            .then(data => {
-                // Verifica se existem mensagens para o destinatário
-                if (data.mensagensDestinatario.length > 0) {
-                    // Armazena as mensagens recebidas do destinatário atual
-                    messagesByContact[currentAdress] = data.mensagensDestinatario;
-                    // Exibe as mensagens recebidas no chat
-                    displayMessages(messagesByContact[currentAdress]);
-                } else {
-                    // Se não houver mensagens, exibe mensagem padrão
-                    chatMessages.innerHTML = "<div class='no-messages'>Nenhuma mensagem disponível</div>";
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao carregar mensagens:', error); // Log de erro
-            });
-    }
+        .catch(error => {
+            console.error('Erro ao buscar mensagens:', error);
+        });
 }
 
 /**
- * Função responsável por exibir as mensagens no chat.
- * Para garantir que nenhuma mensagem seja duplicada, um identificador único é criado
- * usando a data de envio, o conteúdo da mensagem e um timestamp.
+ * Função para exibir mensagens na interface do chat.
+ * As mensagens são organizadas por data de envio e diferenciadas entre remetente e destinatário.
  *
- * @param {Array} mensagens - Lista de mensagens a serem exibidas.
+ * @param {Array} mensagensDestinatario - Lista de mensagens do destinatário.
+ * @param {Array} mensagensRemetente - Lista de mensagens do remetente.
  */
-function displayMessages(mensagens) {
+function displayMessages(mensagensDestinatario, mensagensRemetente) {
     const chatMessages = document.getElementById("chat-messages");
 
-    mensagens.forEach(mensagem => {
-        // Cria um ID único com a data de envio, o conteúdo e um timestamp.
-        const uniqueId = `${mensagem.dataEnvio}-${mensagem.conteudo}-${Date.now()}`;
+    // Limpa o chat antes de adicionar novas mensagens
+    chatMessages.innerHTML = "";
 
-        // Verifica se a mensagem já foi exibida
+    // Combina e ordena as mensagens por data de envio
+    const todasAsMensagens = [
+        ...mensagensDestinatario.map(mensagem => ({ ...mensagem, tipo: 'destinatario' })),
+        ...mensagensRemetente.map(mensagem => ({ ...mensagem, tipo: 'remetente' }))
+    ];
+
+    todasAsMensagens.sort((a, b) => new Date(a.dataEnvio) - new Date(b.dataEnvio));
+
+    // Exibe as mensagens no chat
+    todasAsMensagens.forEach(mensagem => {
+        const uniqueId = `${mensagem.conteudo}-${mensagem.dataEnvio}-${currentAdress}-${mensagem.tipo}`;
         if (!displayedMessageIds.has(uniqueId)) {
             const messageElement = document.createElement("div");
-            messageElement.classList.add("message-bubble-sender"); // Classe para destinatário
-            messageElement.innerHTML = mensagem.conteudo + "<br>" + dataFormatada.format(new Date(mensagem.dataEnvio)); // Exibe conteúdo da mensagem
-            chatMessages.appendChild(messageElement); // Adiciona mensagem ao chat
 
-            // Adiciona a mensagem ao conjunto de IDs exibidos
+            // Aplica classes diferentes para remetente e destinatário
+            if (mensagem.tipo === 'destinatario') {
+                messageElement.classList.add("message-bubble-receiver");
+            } else {
+                messageElement.classList.add("message-bubble-sender");
+            }
+
+            // Formata o conteúdo e a hora da mensagem
+            messageElement.innerHTML = `
+                <div class="message-content">${mensagem.conteudo}</div>
+                <div class="message-time">${dataFormatada.format(new Date(mensagem.dataEnvio))}</div>
+            `;
+
+            // Adiciona a mensagem ao chat e evita duplicação
+            chatMessages.appendChild(messageElement);
             displayedMessageIds.add(uniqueId);
         }
     });
 
-    // Rola a tela para a última mensagem
+    // Rola para a última mensagem exibida
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 /**
- * Função responsável por enviar uma mensagem.
- * Adiciona a mensagem à interface e a envia para o servidor via requisição AJAX.
+ * Função para enviar uma nova mensagem via AJAX.
+ * A mensagem é adicionada ao chat e enviada ao servidor.
  */
 function sendMessage() {
     const messageInput = document.getElementById("message-input");
-    const messageText = messageInput.value; // Captura o texto da mensagem
+    const messageText = messageInput.value.trim(); // Remove espaços em branco
 
-    if (messageText.trim() !== "") { // Verifica se a mensagem não está vazia
-        const chatMessages = document.getElementById("chat-messages");
-
-        // Cria o elemento da mensagem enviada pelo destinatário
-        const messageElement = document.createElement("div");
-        messageElement.classList.add("message-bubble-sender"); // Classe para remetente
-        messageElement.textContent = messageText; // Exibe conteúdo da mensagem
-
-        // Adiciona a mensagem na interface e rola para o fim
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // Armazena a mensagem enviada para o contato atual
-        if (!messagesByContact[currentAdress]) {
-            messagesByContact[currentAdress] = []; // Inicializa array para novo contato
-        }
-        messagesByContact[currentAdress].push({
-            conteudo: messageText,
-            dataEnvio: new Date() // Usando a data atual para o envio
-        }); // Adiciona mensagem ao contato
-
-        // Dados da mensagem para enviar ao servidor
+    if (messageText) { // Verifica se a mensagem não está vazia
         const payload = {
             destinatario: {
-                nome: currentContact,
-                endereco: currentAdress // Endereço do destinatário
+                endereco: currentAdress
             },
-            mensagem: messageText // Texto da mensagem
+            mensagem: messageText // Texto da mensagem a ser enviado
         };
 
-        // Requisição AJAX para enviar a mensagem
+        // Envia a mensagem para o servidor
         fetch('/chat/enviar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload), // Envia dados como JSON
+            body: JSON.stringify(payload),
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Erro ao enviar a mensagem'); // Trata erro de resposta
+                    throw new Error('Erro ao enviar a mensagem');
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Mensagem enviada com sucesso:', data); // Log de sucesso
-                messageInput.value = ""; // Limpa o campo de entrada após o envio
+                console.log('Mensagem enviada com sucesso:', data);
+                messageInput.value = ""; // Limpa o campo de mensagem após o envio
             })
-            .catch((error) => {
-                console.error('Erro:', error); // Log de erro
+            .catch(error => {
+                console.error('Erro ao enviar a mensagem:', error);
             });
+
+        // Exibe a mensagem na interface
+        const chatMessages = document.getElementById("chat-messages");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message-bubble-sender");
+        messageElement.textContent = messageText;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     } else {
-        console.error('Mensagem não pode estar vazia'); // Log se a mensagem estiver vazia
+        alert("A mensagem não pode estar vazia!");
     }
 }
 
-// Ouvinte de evento para enviar mensagem ao pressionar Enter
-document.getElementById("message-input").addEventListener("keypress", function (event) {
+/**
+ * Adiciona o evento de envio de mensagem ao pressionar a tecla Enter.
+ * Se o campo de mensagem não estiver vazio, chama a função `sendMessage`.
+ */
+document.getElementById("message-input").addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
-        sendMessage(); // Chama a função para enviar a mensagem
-        event.preventDefault(); // Evita a nova linha no campo de entrada
+        event.preventDefault(); // Previne o comportamento padrão do Enter
+        sendMessage(); // Chama a função de envio de mensagem
     }
 });
+
+/**
+ * Adiciona o evento ao botão de envio de mensagem.
+ * Chama a função `sendMessage` quando o botão é clicado.
+ */
+document.querySelector('.message-send-btn').addEventListener('click', function() {
+    sendMessage(); // Chama a função de envio de mensagem
+});
+
+/**
+ * Função para inicializar o chat. Pode incluir outras configurações iniciais conforme necessário.
+ * Aqui, estamos apenas iniciando o processo de seleção de contatos e exibição de mensagens.
+ */
+function initializeChat() {
+    if (currentContact) {
+        fetchMessagesFromBackend(currentAdress); // Atualiza as mensagens ao inicializar
+        startMessageUpdate(); // Inicia o intervalo de atualização de mensagens
+    }
+}
+
+// Chama a função de inicialização do chat assim que a página for carregada
+window.onload = initializeChat;
 
 /**
  * Função para formatar a data no padrão brasileiro (dd/mm/aaaa hh:mm:ss).
@@ -217,6 +237,6 @@ const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit', // Adiciona a opção de segundos
-    hour12: false // Define o formato 24 horas
+    second: '2-digit',
+    hour12: false
 });

@@ -79,7 +79,7 @@ $(document).ready(function() {
             var email = $(this).val(); // Pega o valor digitado
 
             $.ajax({
-                url: "/cadastro/destinatario/busca", // URL corrigida
+                url: "/chat/destinatario/busca", // URL corrigida
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8", // Certifique-se de enviar os dados corretamente
                 data: {
@@ -112,7 +112,7 @@ $(document).ready(function() {
                         $.each(destinatarios, function(index, destinatario) {
                             $("#destinatarios-list").append(
                                 '<li>' +
-                                '<input type="checkbox" value="' + destinatario.endereco + '" name="destinatariosSelecionados">' +
+                                '<input type="checkbox" value="' + destinatario.endereco + '" name="email">' +
                                 '   '+destinatario.nome + ' \n' + destinatario.endereco +
                                 '</li>'
                             );
@@ -134,7 +134,7 @@ $(document).ready(function() {
     // Função para enviar convite
     function enviarConvite(email) {
         $.ajax({
-            url: "/cadastro/destinatario/enviarConvite", // Endpoint para envio do convite
+            url: "/chat/destinatario/enviarConvite", // Endpoint para envio do convite
             type: "POST",
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             data: {

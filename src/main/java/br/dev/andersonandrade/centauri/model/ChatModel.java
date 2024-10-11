@@ -8,6 +8,7 @@ import br.dev.andersonandrade.centauri.interfaces.Destinatario;
 import br.dev.andersonandrade.centauri.interfaces.Mensagem;
 import br.dev.andersonandrade.centauri.interfaces.Remetente;
 import br.dev.andersonandrade.centauri.record.ChatMensagemRecord;
+import br.dev.andersonandrade.centauri.record.DestinatarioRecord;
 import br.dev.andersonandrade.centauri.record.RemetenteRecord;
 import br.dev.andersonandrade.centauri.service.CorreioMensagem;
 import br.dev.andersonandrade.centauri.service.RemetenteDestinatarioService;
@@ -29,7 +30,6 @@ import java.util.*;
  * @contact andersonandradedev@outlook.com
  */
 @Component
-@ApplicationScope
 public class ChatModel {
     private final CorreioMensagem correio;
     private final UsuarioService usuarioService;
@@ -115,17 +115,25 @@ public class ChatModel {
      * @return Um registro contendo as mensagens enviadas e recebidas entre o usuário e o destinatário.
      */
     public ChatMensagemRecord mensagens(@NotNull String email, @NotNull Destinatario destinatario) {
+
         validaEndereco(email, "email");
+
         Objects.requireNonNull(destinatario, "Destinatario não pode ser nulo!");
+
         validaEndereco(destinatario.endereco(), "destinatario");
+
         Optional<Usuario> usuario = usuarioService.buscaPorEmail(email);
+
         if (usuario.isPresent()) {
+
             RemetenteRecord remetente = new RemetenteRecord(usuario.get().getNome(), usuario.get().getLogin().getEmail());
             SalaChat salaChat = SalaChat.abrir(remetente, destinatario);
 
             // Recupera mensagens enviadas e recebidas
-            correio.mensagens(remetente).forEach(salaChat::adicionarMensagemRemetente);
-            correio.mensagens(destinatario).forEach(salaChat::adicionarMensagemDestinatario);
+            correio.mensagens(remetente, destinatario).forEach(salaChat::adicionarMensagemRemetente);
+            correio.mensagens(new RemetenteRecord(destinatario.nome(), destinatario.endereco()),
+                              new DestinatarioRecord(remetente.nome(), remetente.endereco()))
+                    .forEach(salaChat::adicionarMensagemDestinatario);
 
             // Ordena as mensagens por data de envio
             List<Mensagem> mensagensOrdenadasRemetente = new ArrayList<>(Set.copyOf(salaChat.getMensagensRemetente()));
@@ -136,6 +144,7 @@ public class ChatModel {
 
             return new ChatMensagemRecord(List.copyOf(mensagensOrdenadasRemetente),
                     List.copyOf(mensagensOrdenadasDestinatario));
+
         }
 
         return new ChatMensagemRecord(List.of(), List.of());

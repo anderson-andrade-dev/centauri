@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -127,6 +128,7 @@ public class RemetenteDestinatarioService {
      * @throws DestinatarioNaoEncontradoException Se o Destinatario não for encontrado
      */
 
+    @Transactional
     public void associar(@NotNull Remetente remetente,@NotNull Destinatario destinatario) {
 
         validaRemetenteDestinatario(remetente,destinatario);
@@ -142,20 +144,24 @@ public class RemetenteDestinatarioService {
 
         Optional<RemetenteDestinatarios> remetenteExistente = resultado
                 .stream()
-                .filter(r -> r.getEnderecoDestinatarios().contains(remetente.endereco()))
+                .filter(r -> r.getEndereco().contains(remetente.endereco()))
                 .findFirst();
 
         Optional<RemetenteDestinatarios> destinatarioExistente = resultado
                 .stream()
-                .filter(d-> d.getEnderecoDestinatarios().contains(destinatario.endereco()))
+                .filter(d-> d.getEndereco().contains(destinatario.endereco()))
                 .findFirst();
 
+        if(remetenteExistente.isEmpty()){
+            logger.info("Cadastrou o Remetente a primeira vez na base de dados!");
+            remetenteDestinatariosRepository.save(new RemetenteDestinatarios(remetente));
+        }
 
-        remetenteExistente.orElseGet(() -> remetenteDestinatariosRepository.save(new RemetenteDestinatarios(remetente)));
-
-        destinatarioExistente.orElseGet(() -> remetenteDestinatariosRepository
-                .save(new RemetenteDestinatarios(new RemetenteRecord(destinatario.nome(), destinatario.endereco()))));
-
+        if(destinatarioExistente.isEmpty()){
+            logger.info("Cadastrou o Destinatario a primeira vez na base de dados!");
+            Remetente remetenteRecord = new RemetenteRecord(destinatario.nome(),destinatario.endereco());
+            remetenteDestinatariosRepository.save(new RemetenteDestinatarios(remetenteRecord));
+        }
 
         if (jaAssociado(remetente, destinatario)) {
             logger.info("Destinatario: {} já associado ao Remetente: {}", destinatario.nome(), remetente.nome());

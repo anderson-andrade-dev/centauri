@@ -1,6 +1,7 @@
 package br.dev.andersonandrade.centauri.repository;
 
 import br.dev.andersonandrade.centauri.entity.RemetenteDestinatarios;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,9 +15,11 @@ import java.util.Set;
  */
 
 public interface RemetenteDestinatariosRepository extends JpaRepository<RemetenteDestinatarios,Long> {
+    @EntityGraph(attributePaths ={"enderecoDestinatarios"} )
     Optional<RemetenteDestinatarios> findByEndereco(String endereco);
 
     @Query("SELECT r FROM RemetenteDestinatarios r " +
             "WHERE r.endereco IN :enderecos ")
+    @EntityGraph(attributePaths ={"enderecoDestinatarios"} )
     List<RemetenteDestinatarios> findByEnderecoIn(Set<String> enderecos);
 }

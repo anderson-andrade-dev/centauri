@@ -50,4 +50,5 @@ public interface Mensagem {
      * @return true se a mensagem foi lida, false caso contrário.
      */
     boolean isLida();
+    
 }

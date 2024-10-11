@@ -3,6 +3,8 @@ package br.dev.andersonandrade.centauri.entity;
 import br.dev.andersonandrade.centauri.interfaces.Remetente;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -24,8 +26,9 @@ public class RemetenteDestinatarios implements Serializable {
     @Column(nullable = false, length = 200, unique = true)
     private String endereco;
     @ElementCollection
-    @CollectionTable(name = "enderecos_destinatarios", joinColumns = @JoinColumn(name = "remetente_destinatarios_id"))
+    @CollectionTable(name = "enderecos_destinatarios", joinColumns = @JoinColumn(name = "remetente_id"))
     @Column(name = "endereco_destinatario")
+    @Cascade(value = CascadeType.MERGE)
     private Set<String> enderecoDestinatarios;
 
     @Deprecated

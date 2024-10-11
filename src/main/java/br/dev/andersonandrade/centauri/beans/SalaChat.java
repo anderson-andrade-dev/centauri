@@ -5,6 +5,9 @@ import br.dev.andersonandrade.centauri.interfaces.Mensagem;
 import br.dev.andersonandrade.centauri.interfaces.Remetente;
 import br.dev.andersonandrade.centauri.interfaces.SalaChatInterface;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,6 +45,7 @@ import java.util.Set;
  * @date 28/09/2024
  * @contact andersonandradedev@outlook.com
  */
+
 public class SalaChat implements SalaChatInterface {
 
     private static final Set<SalaChat> salas = Collections.synchronizedSet(new HashSet<>());
@@ -49,6 +53,7 @@ public class SalaChat implements SalaChatInterface {
     private final Destinatario destinatario;
     private final Set<Mensagem> mensagensDestinatario;
     private final Set<Mensagem> mensagensRemetente;
+    private final static Logger logger = LoggerFactory.getLogger(SalaChat.class);
 
     /**
      * Construtor privado que inicializa uma nova sala de chat entre um remetente e um destinatário.
@@ -77,6 +82,7 @@ public class SalaChat implements SalaChatInterface {
      */
     public static SalaChat abrir(@NotNull Remetente remetente, @NotNull Destinatario destinatario) {
         synchronized (salas) {
+            logger.info("Sala de Chat aberta para o Remetente: {} e o Destinatario: {}",remetente.nome(), destinatario.nome());
             return salas.stream()
                     .filter(sala -> sala.destinatario.endereco().equals(destinatario.endereco()) &&
                             sala.remetente.endereco().equals(remetente.endereco()))
