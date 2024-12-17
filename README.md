@@ -2,7 +2,7 @@
 
 # 🚀 Centauri - Plataforma de Publicação de Artigos e Mensagens com IA  
 
-[Imgur](https://i.imgur.com/C1g4eJY.jpg)
+![Imgur](https://i.imgur.com/C1g4eJY.jpg)
 
 ---
 
